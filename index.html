@@ -30,13 +30,16 @@
   }
   .tabs {
     display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
     background: #ECEFF1;
     border-radius: 10px;
     padding: 4px;
     margin-bottom: 18px;
   }
   .tab {
-    flex: 1;
+    flex: 1 1 30%;
+    min-width: 90px;
     text-align: center;
     padding: 10px 4px;
     font-size: 11px;
@@ -290,6 +293,37 @@
     text-align: center;
     padding: 24px 16px;
   }
+  .flashcard {
+    cursor: pointer;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .flash-hanzi {
+    font-size: 60px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .flash-pinyin-arti {
+    font-size: 18px;
+    text-align: center;
+  }
+  .speaker-btn {
+    width: auto;
+    display: inline-block;
+    padding: 3px 8px;
+    margin: 0 2px;
+    font-size: 15px;
+    border-radius: 8px;
+    background: #ECEFF1;
+    color: var(--primary-dark);
+    line-height: 1;
+    vertical-align: middle;
+  }
 </style>
 </head>
 <body>
@@ -301,6 +335,7 @@
   <div class="tab" id="tabTulis">TULIS</div>
   <div class="tab" id="tabPilganIndo">PILGAN INDO</div>
   <div class="tab" id="tabPilganHanzi">PILGAN HANZI</div>
+  <div class="tab" id="tabTesCard">TES CARD</div>
 </div>
 
 <!-- MENU 1: TES (Master Data + generate Soal/Jawaban list, unchanged content, renamed from "Mandarin") -->
@@ -482,6 +517,48 @@
 
 </div>
 
+<!-- MENU 5: TES CARD (flashcard, one at a time, tap to flip, no grading — just sequential review) -->
+<div class="mode-panel" id="panelTesCard">
+
+  <div id="tcNoData" class="card info" style="display:none;">
+    Belum ada Master Data. Isi &amp; simpan dulu di tab <b>TES</b>, baru kembali ke sini.
+  </div>
+
+  <div id="tcIntro" style="display:none;">
+    <div class="hint" style="margin-top:0;">
+      Soal muncul satu per satu dalam Bahasa Indonesia. Tap kartu untuk membalik dan melihat jawaban
+      (hanzi besar, lalu pinyin &amp; arti), lalu tekan Selanjutnya untuk lanjut ke soal berikutnya.
+    </div>
+    <button class="btn-primary" id="tcStartBtn">MULAI</button>
+  </div>
+
+  <div id="tcSession" style="display:none;">
+    <div class="latihan-progress" id="tcProgress"></div>
+
+    <div class="card result flashcard" id="tcCard">
+      <div id="tcFront">
+        <div class="soal-card-text" id="tcFrontText" style="text-align:center;"></div>
+        <div class="hint" style="margin:10px 0 0; text-align:center;">Tap kartu untuk lihat jawaban</div>
+      </div>
+      <div id="tcBack" style="display:none;">
+        <div class="flash-hanzi" id="tcBackHanzi"></div>
+        <div class="flash-pinyin-arti" id="tcBackPinyinArti"></div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="tcNextBtn">SELANJUTNYA ▶</button>
+  </div>
+
+  <div id="tcComplete" style="display:none;">
+    <div class="card verify-ok complete-card">
+      <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+      <div id="tcCompleteStats" style="font-size:14px;"></div>
+    </div>
+    <button class="btn-primary" id="tcRestartBtn">MULAI ULANG</button>
+  </div>
+
+</div>
+
 <!-- Fullscreen expand modal (shared by Soal / Jawaban in TES) -->
 <div id="expandModal">
   <div class="expand-header">
@@ -598,6 +675,41 @@ function escapeHtml(s) {
 }
 function highlightPause(s) {
   return escapeHtml(s).replace(/\(pause\)/gi, (m) => `<b>${m}</b>`);
+}
+
+// ---------- Text-to-speech (always speaks the hanzi text, never pinyin — feeding
+// romanized pinyin to a TTS engine makes it read like English, not Mandarin) ----------
+
+function speakHanzi(hanziText) {
+  if (!("speechSynthesis" in window)) {
+    alert("Text-to-speech tidak didukung di browser ini.");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(hanziText);
+  utter.lang = "zh-CN";
+  utter.rate = 0.85;
+  window.speechSynthesis.speak(utter);
+}
+
+// Replaces every <span class="speaker-slot"> inside containerEl with a real
+// speaker button that reads hanziText aloud. Using a placeholder + replaceWith
+// (instead of embedding text into an inline onclick string) avoids any escaping
+// issues with special characters.
+function attachSpeakerButtons(containerEl, hanziText) {
+  if (!containerEl) return;
+  containerEl.querySelectorAll(".speaker-slot").forEach((slot) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "speaker-btn";
+    btn.textContent = "🔊";
+    btn.setAttribute("aria-label", "Dengarkan pengucapan");
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      speakHanzi(hanziText);
+    });
+    slot.replaceWith(btn);
+  });
 }
 
 // ======================================================================
@@ -867,8 +979,10 @@ function updateLatihanProgress() {
 
 function finishWriting() {
   if (!latihanCurrentEntry) return;
-  const answerHtml = `${highlightPause(latihanCurrentEntry.hanzi)} - ${highlightPause(latihanCurrentEntry.pinyin)}`;
-  document.getElementById("latihanAnswerText").innerHTML = answerHtml;
+  const answerHtml = `${highlightPause(latihanCurrentEntry.hanzi)} - ${highlightPause(latihanCurrentEntry.pinyin)} <span class="speaker-slot"></span>`;
+  const answerEl = document.getElementById("latihanAnswerText");
+  answerEl.innerHTML = answerHtml;
+  attachSpeakerButtons(answerEl, latihanCurrentEntry.hanzi);
   document.getElementById("latihanAnswerPanel").style.display = "block";
 }
 
@@ -1020,7 +1134,9 @@ function createMcqController(cfg) {
       else if (i === idx) b.classList.add("option-wrong");
     });
 
-    el(cfg.answerTextId).innerHTML = cfg.answerFormat(state.current);
+    const answerEl = el(cfg.answerTextId);
+    answerEl.innerHTML = cfg.answerFormat(state.current);
+    attachSpeakerButtons(answerEl, state.current.hanzi);
     el(cfg.answerPanelId).style.display = "block";
   }
 
@@ -1055,7 +1171,7 @@ const pilganIndoController = createMcqController({
   progressId: "piProgress", soalTextId: "piSoalText", optionsContainerId: "piOptions",
   answerPanelId: "piAnswerPanel", answerTextId: "piAnswerText", completeStatsId: "piCompleteStats",
   questionField: "arti", optionField: "hanzi",
-  answerFormat: (e) => `${highlightPause(e.hanzi)} - ${highlightPause(e.pinyin)}`,
+  answerFormat: (e) => `${highlightPause(e.hanzi)} - ${highlightPause(e.pinyin)} <span class="speaker-slot"></span>`,
 });
 
 const pilganHanziController = createMcqController({
@@ -1064,13 +1180,96 @@ const pilganHanziController = createMcqController({
   progressId: "phProgress", soalTextId: "phSoalText", optionsContainerId: "phOptions",
   answerPanelId: "phAnswerPanel", answerTextId: "phAnswerText", completeStatsId: "phCompleteStats",
   questionField: "hanzi", optionField: "arti",
-  answerFormat: (e) => `${highlightPause(e.pinyin)} - ${highlightPause(e.arti)}`,
+  answerFormat: (e) => `${highlightPause(e.pinyin)} <span class="speaker-slot"></span> - ${highlightPause(e.arti)}`,
+});
+
+// ======================================================================
+// MENU 5: TES CARD — flashcard, one at a time, tap to flip, no grading
+// ======================================================================
+
+let tcQueue = null;
+let tcCurrentEntry = null;
+let tcIndex = 0;
+let tcTotal = 0;
+let tcFlipped = false;
+
+function refreshTcAvailability() {
+  const hasData = !!(masterEntries && masterEntries.length >= 1);
+  document.getElementById("tcNoData").style.display = hasData ? "none" : "block";
+  document.getElementById("tcIntro").style.display = hasData ? "block" : "none";
+  if (!hasData) {
+    document.getElementById("tcSession").style.display = "none";
+    document.getElementById("tcComplete").style.display = "none";
+  }
+}
+
+function startTesCard() {
+  if (!masterEntries || masterEntries.length < 1) return;
+  tcQueue = fisherYatesShuffle(masterEntries);
+  tcTotal = tcQueue.length;
+  tcIndex = 0;
+
+  document.getElementById("tcIntro").style.display = "none";
+  document.getElementById("tcComplete").style.display = "none";
+  document.getElementById("tcSession").style.display = "block";
+  showTcCard();
+}
+
+function showTcCard() {
+  if (tcIndex >= tcQueue.length) {
+    showTcComplete();
+    return;
+  }
+  tcCurrentEntry = tcQueue[tcIndex];
+  tcFlipped = false;
+
+  document.getElementById("tcProgress").textContent = `Kartu ke-${tcIndex + 1} dari ${tcTotal}`;
+  document.getElementById("tcFrontText").innerHTML = highlightPause(tcCurrentEntry.arti);
+  document.getElementById("tcFront").style.display = "block";
+  document.getElementById("tcBack").style.display = "none";
+}
+
+function flipTcCard() {
+  if (!tcCurrentEntry) return;
+  tcFlipped = !tcFlipped;
+
+  if (tcFlipped) {
+    document.getElementById("tcBackHanzi").innerHTML = highlightPause(tcCurrentEntry.hanzi);
+    const pinyinArtiEl = document.getElementById("tcBackPinyinArti");
+    pinyinArtiEl.innerHTML = `${highlightPause(tcCurrentEntry.pinyin)} <span class="speaker-slot"></span> - ${highlightPause(tcCurrentEntry.arti)}`;
+    attachSpeakerButtons(pinyinArtiEl, tcCurrentEntry.hanzi);
+    document.getElementById("tcFront").style.display = "none";
+    document.getElementById("tcBack").style.display = "block";
+  } else {
+    document.getElementById("tcFront").style.display = "block";
+    document.getElementById("tcBack").style.display = "none";
+  }
+}
+
+function nextTcCard() {
+  tcIndex += 1;
+  showTcCard();
+}
+
+function showTcComplete() {
+  document.getElementById("tcSession").style.display = "none";
+  document.getElementById("tcComplete").style.display = "block";
+  document.getElementById("tcCompleteStats").innerHTML = `Total kartu: <b>${tcTotal}</b>`;
+}
+
+document.getElementById("tcCard").addEventListener("click", flipTcCard);
+document.getElementById("tcStartBtn").addEventListener("click", startTesCard);
+document.getElementById("tcRestartBtn").addEventListener("click", startTesCard);
+document.getElementById("tcNextBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  nextTcCard();
 });
 
 function refreshAllPracticeAvailability() {
   refreshLatihanAvailability();
   pilganIndoController.refreshAvailability();
   pilganHanziController.refreshAvailability();
+  refreshTcAvailability();
 }
 
 // ---------- Tab switching ----------
@@ -1080,10 +1279,12 @@ function setMode(newMode) {
   document.getElementById("tabTulis").classList.toggle("active", newMode === "tulis");
   document.getElementById("tabPilganIndo").classList.toggle("active", newMode === "pilganIndo");
   document.getElementById("tabPilganHanzi").classList.toggle("active", newMode === "pilganHanzi");
+  document.getElementById("tabTesCard").classList.toggle("active", newMode === "tesCard");
   document.getElementById("panelTes").classList.toggle("active", newMode === "tes");
   document.getElementById("panelTulis").classList.toggle("active", newMode === "tulis");
   document.getElementById("panelPilganIndo").classList.toggle("active", newMode === "pilganIndo");
   document.getElementById("panelPilganHanzi").classList.toggle("active", newMode === "pilganHanzi");
+  document.getElementById("panelTesCard").classList.toggle("active", newMode === "tesCard");
   if (newMode !== "tes") refreshAllPracticeAvailability();
 }
 
@@ -1091,6 +1292,7 @@ document.getElementById("tabTes").addEventListener("click", () => setMode("tes")
 document.getElementById("tabTulis").addEventListener("click", () => setMode("tulis"));
 document.getElementById("tabPilganIndo").addEventListener("click", () => setMode("pilganIndo"));
 document.getElementById("tabPilganHanzi").addEventListener("click", () => setMode("pilganHanzi"));
+document.getElementById("tabTesCard").addEventListener("click", () => setMode("tesCard"));
 
 refreshAllPracticeAvailability();
 </script>
