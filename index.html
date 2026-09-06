@@ -328,7 +328,7 @@
 </head>
 <body>
 
-<h1>MANDARIN</h1>
+<h1>MANDARIN v1.0</h1>
 
 <div class="tabs">
   <div class="tab active" id="tabTes">TES</div>
@@ -336,6 +336,7 @@
   <div class="tab" id="tabPilganIndo">PILGAN INDO</div>
   <div class="tab" id="tabPilganHanzi">PILGAN HANZI</div>
   <div class="tab" id="tabTesCard">TES CARD</div>
+  <div class="tab" id="tabKarakter">KARAKTER</div>
 </div>
 
 <!-- MENU 1: TES (Master Data + generate Soal/Jawaban list, unchanged content, renamed from "Mandarin") -->
@@ -471,6 +472,7 @@
       <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
       <div id="piCompleteStats" style="font-size:14px;"></div>
     </div>
+    <div id="piWrongList"></div>
     <button class="btn-primary" id="piRestartBtn">MULAI ULANG</button>
   </div>
 
@@ -512,6 +514,7 @@
       <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
       <div id="phCompleteStats" style="font-size:14px;"></div>
     </div>
+    <div id="phWrongList"></div>
     <button class="btn-primary" id="phRestartBtn">MULAI ULANG</button>
   </div>
 
@@ -558,7 +561,101 @@
       <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
       <div id="tcCompleteStats" style="font-size:14px;"></div>
     </div>
+    <div id="tcWrongList"></div>
     <button class="btn-primary" id="tcRestartBtn">MULAI ULANG</button>
+  </div>
+
+</div>
+
+<!-- MENU 6: KARAKTER (auto-pecah dari Master Data TES, per karakter — bukan per kata) -->
+<div class="mode-panel" id="panelKarakter">
+
+  <div id="charNoData" class="card info" style="display:none;">
+    Belum ada Master Data. Isi &amp; simpan dulu di tab <b>TES</b>, baru kembali ke sini.
+  </div>
+
+  <div id="charInfo" style="display:none;">
+    <div class="card info" id="charSummaryCard"></div>
+    <div id="charNotEnoughWarning" class="card error" style="display:none;">
+      Karakter/suku kata unik yang berhasil dipecah masih kurang dari 4 — belum cukup untuk membuat pilihan ganda 4 opsi.
+    </div>
+  </div>
+
+  <div class="tabs" id="charSubTabs" style="margin-top:4px;">
+    <div class="tab active" id="subTabCharHanzi">HANZI</div>
+    <div class="tab" id="subTabCharPinyin">PINYIN</div>
+  </div>
+
+  <!-- SUB-MENU: HANZI (soal = 1 karakter, pilihan = 4 pinyin) -->
+  <div class="mode-panel active" id="subPanelCharHanzi">
+    <div id="chHanziIntro" style="display:none;">
+      <div class="hint" style="margin-top:0;">
+        Soal berupa 1 karakter hanzi (bukan kata utuh). Pilih pinyin yang tepat dari 4 pilihan.
+        Kalau karakternya punya lebih dari satu bacaan yang sah, semuanya dianggap benar.
+      </div>
+      <button class="btn-primary" id="chHanziStartBtn">MULAI PILGAN</button>
+    </div>
+
+    <div id="chHanziSession" style="display:none;">
+      <div class="latihan-progress" id="chHanziProgress"></div>
+      <div class="card result soal-card">
+        <div class="soal-card-text" id="chHanziSoalText" style="font-size:44px;"></div>
+      </div>
+      <div id="chHanziOptions"></div>
+
+      <div id="chHanziAnswerPanel" style="display:none;">
+        <div class="card verify-ok answer-card">
+          <div class="hint" style="margin:0 0 4px;">Kunci jawaban (semua bacaan sah)</div>
+          <div class="answer-card-text" id="chHanziAnswerText"></div>
+        </div>
+        <button class="btn-primary" id="chHanziNextBtn">LANJUT</button>
+      </div>
+    </div>
+
+    <div id="chHanziComplete" style="display:none;">
+      <div class="card verify-ok complete-card">
+        <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+        <div id="chHanziCompleteStats" style="font-size:14px;"></div>
+      </div>
+      <div id="chHanziWrongList"></div>
+      <button class="btn-primary" id="chHanziRestartBtn">MULAI ULANG</button>
+    </div>
+  </div>
+
+  <!-- SUB-MENU: PINYIN (soal = 1 suku kata pinyin, pilihan = 4 karakter) -->
+  <div class="mode-panel" id="subPanelCharPinyin">
+    <div id="chPinyinIntro" style="display:none;">
+      <div class="hint" style="margin-top:0;">
+        Soal berupa 1 suku kata pinyin. Pilih karakter hanzi yang tepat dari 4 pilihan.
+        Kalau ada lebih dari satu karakter yang sah untuk suku kata itu, semuanya dianggap benar.
+      </div>
+      <button class="btn-primary" id="chPinyinStartBtn">MULAI PILGAN</button>
+    </div>
+
+    <div id="chPinyinSession" style="display:none;">
+      <div class="latihan-progress" id="chPinyinProgress"></div>
+      <div class="card result soal-card">
+        <div class="soal-card-text" id="chPinyinSoalText"></div>
+      </div>
+      <div id="chPinyinOptions"></div>
+
+      <div id="chPinyinAnswerPanel" style="display:none;">
+        <div class="card verify-ok answer-card">
+          <div class="hint" style="margin:0 0 4px;">Kunci jawaban (semua karakter sah)</div>
+          <div class="answer-card-text" id="chPinyinAnswerText" style="font-size:32px;"></div>
+        </div>
+        <button class="btn-primary" id="chPinyinNextBtn">LANJUT</button>
+      </div>
+    </div>
+
+    <div id="chPinyinComplete" style="display:none;">
+      <div class="card verify-ok complete-card">
+        <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+        <div id="chPinyinCompleteStats" style="font-size:14px;"></div>
+      </div>
+      <div id="chPinyinWrongList"></div>
+      <button class="btn-primary" id="chPinyinRestartBtn">MULAI ULANG</button>
+    </div>
   </div>
 
 </div>
@@ -671,6 +768,21 @@ function renderVerificationInto(elementId, v, labels) {
 function renderErrorInto(elementId, message) {
   document.getElementById(elementId).innerHTML = message
     ? `<div class="card error">${message}</div>` : "";
+}
+
+// Renders a dedupe'd list of wrong items on a completion screen. `items` is an
+// array of already-formatted display strings (one per line).
+function renderWrongList(elementId, items) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  if (!items || items.length === 0) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = `
+    <div class="hint" style="text-align:left; margin:14px 0 6px;">Perlu diulang (${items.length}):</div>
+    <div class="card result"><div class="result-box">${items.join("\n")}</div></div>
+  `;
 }
 
 // Escapes HTML special chars, then bolds every "(Pause)" occurrence (any casing).
@@ -1041,6 +1153,7 @@ function createMcqController(cfg) {
     answered: false,
     pendingCorrect: false,
     currentOptions: null,
+    wrongEntries: null, // Set of entry refs answered wrong at least once
   };
 
   function el(id) { return document.getElementById(id); }
@@ -1084,6 +1197,7 @@ function createMcqController(cfg) {
     state.total = masterEntries.length;
     state.attemptNumber = 0;
     state.wrongAttempts = 0;
+    state.wrongEntries = new Set();
 
     el(cfg.introId).style.display = "none";
     el(cfg.completeId).style.display = "none";
@@ -1129,7 +1243,10 @@ function createMcqController(cfg) {
     const correctText = state.current[cfg.optionField];
     const isCorrect = selectedText === correctText;
     state.pendingCorrect = isCorrect;
-    if (!isCorrect) state.wrongAttempts += 1;
+    if (!isCorrect) {
+      state.wrongAttempts += 1;
+      state.wrongEntries.add(state.current);
+    }
 
     const buttons = el(cfg.optionsContainerId).querySelectorAll("button");
     buttons.forEach((b, i) => {
@@ -1160,6 +1277,8 @@ function createMcqController(cfg) {
       `Total soal: <b>${state.total}</b><br>` +
       `Total percobaan: <b>${state.attemptNumber}</b><br>` +
       `Salah: <b>${state.wrongAttempts}</b> kali`;
+    const items = Array.from(state.wrongEntries).map(cfg.formatWrongItem);
+    renderWrongList(cfg.wrongListId, items);
   }
 
   el(cfg.startBtnId).addEventListener("click", start);
@@ -1174,8 +1293,10 @@ const pilganIndoController = createMcqController({
   startBtnId: "piStartBtn", restartBtnId: "piRestartBtn", nextBtnId: "piNextBtn",
   progressId: "piProgress", soalTextId: "piSoalText", optionsContainerId: "piOptions",
   answerPanelId: "piAnswerPanel", answerTextId: "piAnswerText", completeStatsId: "piCompleteStats",
+  wrongListId: "piWrongList",
   questionField: "arti", optionField: "hanzi",
   answerFormat: (e) => `${highlightPause(e.hanzi)} - ${highlightPause(e.pinyin)} <span class="speaker-slot"></span>`,
+  formatWrongItem: (e) => `${e.hanzi} - ${e.pinyin} - ${e.arti}`,
 });
 
 const pilganHanziController = createMcqController({
@@ -1183,8 +1304,10 @@ const pilganHanziController = createMcqController({
   startBtnId: "phStartBtn", restartBtnId: "phRestartBtn", nextBtnId: "phNextBtn",
   progressId: "phProgress", soalTextId: "phSoalText", optionsContainerId: "phOptions",
   answerPanelId: "phAnswerPanel", answerTextId: "phAnswerText", completeStatsId: "phCompleteStats",
+  wrongListId: "phWrongList",
   questionField: "hanzi", optionField: "arti",
   answerFormat: (e) => `${highlightPause(e.pinyin)} <span class="speaker-slot"></span> - ${highlightPause(e.arti)}`,
+  formatWrongItem: (e) => `${e.hanzi} - ${e.pinyin} - ${e.arti}`,
 });
 
 // ======================================================================
@@ -1196,6 +1319,7 @@ let tcHistoryStack = null;
 let tcCurrentEntry = null;
 let tcAttemptNumber = 0;
 let tcWrongAttempts = 0;
+let tcWrongEntries = null;
 let tcTotal = 0;
 let tcFlipped = false;
 
@@ -1216,6 +1340,7 @@ function startTesCard() {
   tcTotal = masterEntries.length;
   tcAttemptNumber = 0;
   tcWrongAttempts = 0;
+  tcWrongEntries = new Set();
 
   document.getElementById("tcIntro").style.display = "none";
   document.getElementById("tcComplete").style.display = "none";
@@ -1281,6 +1406,7 @@ function prevTcCard() {
 function markTcSalah() {
   if (!tcCurrentEntry) return;
   tcWrongAttempts += 1;
+  tcWrongEntries.add(tcCurrentEntry);
   tcQueue = fisherYatesShuffle(tcQueue);
   showTcCard();
 }
@@ -1292,6 +1418,8 @@ function showTcComplete() {
     `Total kartu: <b>${tcTotal}</b><br>` +
     `Total dilihat: <b>${tcAttemptNumber}</b><br>` +
     `Salah: <b>${tcWrongAttempts}</b> kali`;
+  const items = Array.from(tcWrongEntries).map((e) => `${e.hanzi} - ${e.pinyin} - ${e.arti}`);
+  renderWrongList("tcWrongList", items);
 }
 
 document.getElementById("tcCard").addEventListener("click", flipTcCard);
@@ -1310,11 +1438,273 @@ document.getElementById("tcSalahBtn").addEventListener("click", (e) => {
   markTcSalah();
 });
 
+// ======================================================================
+// MENU 6: KARAKTER — auto-pecah Master Data per karakter (bukan per kata)
+// ======================================================================
+// A line only contributes if its pinyin (split by whitespace) has exactly
+// as many syllables as its hanzi has characters — otherwise it's skipped
+// and counted in `skipped` (shown in the tab, never touching Master Data).
+// A character with more than one valid reading keeps ALL of them; grading
+// is by set-membership, so any valid reading/character counts as correct.
+
+function buildCharacterPools() {
+  const characterMap = new Map(); // char -> Set(readings)
+  let skipped = 0;
+  const totalLines = masterEntries ? masterEntries.length : 0;
+
+  if (masterEntries) {
+    masterEntries.forEach((entry) => {
+      const chars = Array.from(entry.hanzi);
+      const syllables = entry.pinyin.trim().split(/\s+/).filter((s) => s.length > 0);
+      if (chars.length === 0 || chars.length !== syllables.length) {
+        skipped += 1;
+        return;
+      }
+      chars.forEach((ch, idx) => {
+        if (!characterMap.has(ch)) characterMap.set(ch, new Set());
+        characterMap.get(ch).add(syllables[idx]);
+      });
+    });
+  }
+
+  const pinyinMap = new Map(); // syllable -> Set(chars)
+  characterMap.forEach((readings, ch) => {
+    readings.forEach((r) => {
+      if (!pinyinMap.has(r)) pinyinMap.set(r, new Set());
+      pinyinMap.get(r).add(ch);
+    });
+  });
+
+  return { characterMap, pinyinMap, skipped, totalLines };
+}
+
+function poolFromCharacterMap(characterMap) {
+  const pool = [];
+  const allAnswerTexts = [];
+  characterMap.forEach((readings, ch) => {
+    pool.push({ question: ch, validAnswers: readings });
+    readings.forEach((r) => allAnswerTexts.push(r));
+  });
+  return { pool, allAnswerTexts };
+}
+
+function poolFromPinyinMap(pinyinMap) {
+  const pool = [];
+  const allAnswerTexts = [];
+  pinyinMap.forEach((chars, py) => {
+    pool.push({ question: py, validAnswers: chars });
+    chars.forEach((c) => allAnswerTexts.push(c));
+  });
+  return { pool, allAnswerTexts };
+}
+
+function refreshKarakterAvailability() {
+  const hasAnyMaster = !!(masterEntries && masterEntries.length > 0);
+  document.getElementById("charNoData").style.display = hasAnyMaster ? "none" : "block";
+  document.getElementById("charInfo").style.display = hasAnyMaster ? "block" : "none";
+  document.getElementById("charSubTabs").style.display = hasAnyMaster ? "flex" : "none";
+
+  if (!hasAnyMaster) {
+    document.getElementById("subPanelCharHanzi").classList.remove("active");
+    document.getElementById("subPanelCharPinyin").classList.remove("active");
+    return;
+  }
+
+  const built = buildCharacterPools();
+  let summaryHtml = `Master data: <b>${built.totalLines}</b> kata → <b>${built.characterMap.size}</b> karakter unik, <b>${built.pinyinMap.size}</b> suku kata pinyin unik.`;
+  if (built.skipped > 0) {
+    summaryHtml += `<br><span style="color:var(--red);">${built.skipped} baris dilewati (jumlah suku kata pinyin tidak cocok dengan jumlah karakter).</span>`;
+  }
+  document.getElementById("charSummaryCard").innerHTML = summaryHtml;
+
+  const notEnough = built.characterMap.size < 4 || built.pinyinMap.size < 4;
+  document.getElementById("charNotEnoughWarning").style.display = notEnough ? "block" : "none";
+
+  chHanziController.refreshAvailability();
+  chPinyinController.refreshAvailability();
+}
+
+// Generic set-membership MCQ controller: entries look like {question, validAnswers: Set}.
+// Any option whose text is inside validAnswers counts as correct — this is what makes
+// polyphonic characters (觉 = jiao/jue) and multi-character pinyin syllables work.
+function createCharMcqController(cfg) {
+  const state = {
+    queue: null, current: null, attemptNumber: 0, wrongAttempts: 0, total: 0,
+    answered: false, pendingCorrect: false, currentOptions: null, allAnswerTexts: null,
+    wrongEntries: null,
+  };
+
+  function el(id) { return document.getElementById(id); }
+
+  function refreshAvailability() {
+    const built = cfg.buildPool();
+    const hasEnough = built.pool.length >= 4;
+    el(cfg.introId).style.display = hasEnough ? "block" : "none";
+    if (!hasEnough) {
+      el(cfg.sessionId).style.display = "none";
+      el(cfg.completeId).style.display = "none";
+    }
+  }
+
+  function buildOptionTexts(entry) {
+    const correctArr = Array.from(entry.validAnswers);
+    const displayCorrect = correctArr[secureRandomInt(correctArr.length)];
+    const candidatePool = fisherYatesShuffle(
+      state.allAnswerTexts.filter((t) => !entry.validAnswers.has(t))
+    );
+    const distractors = [];
+    const used = new Set([displayCorrect]);
+    for (const t of candidatePool) {
+      if (used.has(t)) continue;
+      used.add(t);
+      distractors.push(t);
+      if (distractors.length === 3) break;
+    }
+    let i = 0;
+    while (distractors.length < 3 && i < candidatePool.length) {
+      const t = candidatePool[i];
+      if (!entry.validAnswers.has(t) && !distractors.includes(t)) distractors.push(t);
+      i++;
+    }
+    return fisherYatesShuffle([displayCorrect, ...distractors]);
+  }
+
+  function start() {
+    const built = cfg.buildPool();
+    if (built.pool.length < 4) return;
+    state.queue = fisherYatesShuffle(built.pool);
+    state.allAnswerTexts = built.allAnswerTexts;
+    state.total = built.pool.length;
+    state.attemptNumber = 0;
+    state.wrongAttempts = 0;
+    state.wrongEntries = new Set();
+
+    el(cfg.introId).style.display = "none";
+    el(cfg.completeId).style.display = "none";
+    el(cfg.sessionId).style.display = "block";
+    showNext();
+  }
+
+  function showNext() {
+    if (state.queue.length === 0) {
+      showComplete();
+      return;
+    }
+    state.current = state.queue[0];
+    state.attemptNumber += 1;
+    state.answered = false;
+
+    el(cfg.progressId).textContent =
+      `Soal ke-${state.attemptNumber} • Sisa ${state.queue.length} dari ${state.total}`;
+    el(cfg.soalTextId).innerHTML = highlightPause(state.current.question);
+    el(cfg.answerPanelId).style.display = "none";
+
+    state.currentOptions = buildOptionTexts(state.current);
+    renderOptions();
+  }
+
+  function renderOptions() {
+    const container = el(cfg.optionsContainerId);
+    container.innerHTML = "";
+    state.currentOptions.forEach((text, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "btn-outline option-btn";
+      btn.innerHTML = highlightPause(text);
+      btn.addEventListener("click", () => selectOption(idx));
+      container.appendChild(btn);
+    });
+  }
+
+  function selectOption(idx) {
+    if (state.answered) return;
+    state.answered = true;
+
+    const selectedText = state.currentOptions[idx];
+    const isCorrect = state.current.validAnswers.has(selectedText);
+    state.pendingCorrect = isCorrect;
+    if (!isCorrect) {
+      state.wrongAttempts += 1;
+      state.wrongEntries.add(state.current);
+    }
+
+    const buttons = el(cfg.optionsContainerId).querySelectorAll("button");
+    buttons.forEach((b, i) => {
+      b.disabled = true;
+      if (state.current.validAnswers.has(state.currentOptions[i])) b.classList.add("option-correct");
+      else if (i === idx) b.classList.add("option-wrong");
+    });
+
+    const answerEl = el(cfg.answerTextId);
+    answerEl.innerHTML = cfg.answerFormat(state.current);
+    if (cfg.attachSpeaker) cfg.attachSpeaker(answerEl, state.current);
+    el(cfg.answerPanelId).style.display = "block";
+  }
+
+  function proceed() {
+    if (state.pendingCorrect) {
+      state.queue.shift();
+    } else {
+      state.queue = fisherYatesShuffle(state.queue);
+    }
+    showNext();
+  }
+
+  function showComplete() {
+    el(cfg.sessionId).style.display = "none";
+    el(cfg.completeId).style.display = "block";
+    el(cfg.completeStatsId).innerHTML =
+      `Total soal: <b>${state.total}</b><br>` +
+      `Total percobaan: <b>${state.attemptNumber}</b><br>` +
+      `Salah: <b>${state.wrongAttempts}</b> kali`;
+    const items = Array.from(state.wrongEntries).map(cfg.formatWrongItem);
+    renderWrongList(cfg.wrongListId, items);
+  }
+
+  el(cfg.startBtnId).addEventListener("click", start);
+  el(cfg.restartBtnId).addEventListener("click", start);
+  el(cfg.nextBtnId).addEventListener("click", proceed);
+
+  return { refreshAvailability };
+}
+
+const chHanziController = createCharMcqController({
+  introId: "chHanziIntro", sessionId: "chHanziSession", completeId: "chHanziComplete",
+  startBtnId: "chHanziStartBtn", restartBtnId: "chHanziRestartBtn", nextBtnId: "chHanziNextBtn",
+  progressId: "chHanziProgress", soalTextId: "chHanziSoalText", optionsContainerId: "chHanziOptions",
+  answerPanelId: "chHanziAnswerPanel", answerTextId: "chHanziAnswerText", completeStatsId: "chHanziCompleteStats",
+  wrongListId: "chHanziWrongList",
+  buildPool: () => poolFromCharacterMap(buildCharacterPools().characterMap),
+  answerFormat: (entry) => `${Array.from(entry.validAnswers).map(highlightPause).join(" / ")} <span class="speaker-slot"></span>`,
+  attachSpeaker: (el, entry) => attachSpeakerButtons(el, entry.question),
+  formatWrongItem: (entry) => `${entry.question} - ${Array.from(entry.validAnswers).join("/")}`,
+});
+
+const chPinyinController = createCharMcqController({
+  introId: "chPinyinIntro", sessionId: "chPinyinSession", completeId: "chPinyinComplete",
+  startBtnId: "chPinyinStartBtn", restartBtnId: "chPinyinRestartBtn", nextBtnId: "chPinyinNextBtn",
+  progressId: "chPinyinProgress", soalTextId: "chPinyinSoalText", optionsContainerId: "chPinyinOptions",
+  answerPanelId: "chPinyinAnswerPanel", answerTextId: "chPinyinAnswerText", completeStatsId: "chPinyinCompleteStats",
+  wrongListId: "chPinyinWrongList",
+  buildPool: () => poolFromPinyinMap(buildCharacterPools().pinyinMap),
+  answerFormat: (entry) => Array.from(entry.validAnswers).map(highlightPause).join(" / "),
+  formatWrongItem: (entry) => `${entry.question} - ${Array.from(entry.validAnswers).join("/")}`,
+});
+
+function setCharSubMode(sub) {
+  document.getElementById("subTabCharHanzi").classList.toggle("active", sub === "hanzi");
+  document.getElementById("subTabCharPinyin").classList.toggle("active", sub === "pinyin");
+  document.getElementById("subPanelCharHanzi").classList.toggle("active", sub === "hanzi");
+  document.getElementById("subPanelCharPinyin").classList.toggle("active", sub === "pinyin");
+}
+document.getElementById("subTabCharHanzi").addEventListener("click", () => setCharSubMode("hanzi"));
+document.getElementById("subTabCharPinyin").addEventListener("click", () => setCharSubMode("pinyin"));
+
 function refreshAllPracticeAvailability() {
   refreshLatihanAvailability();
   pilganIndoController.refreshAvailability();
   pilganHanziController.refreshAvailability();
   refreshTcAvailability();
+  refreshKarakterAvailability();
 }
 
 // ---------- Tab switching ----------
@@ -1325,11 +1715,13 @@ function setMode(newMode) {
   document.getElementById("tabPilganIndo").classList.toggle("active", newMode === "pilganIndo");
   document.getElementById("tabPilganHanzi").classList.toggle("active", newMode === "pilganHanzi");
   document.getElementById("tabTesCard").classList.toggle("active", newMode === "tesCard");
+  document.getElementById("tabKarakter").classList.toggle("active", newMode === "karakter");
   document.getElementById("panelTes").classList.toggle("active", newMode === "tes");
   document.getElementById("panelTulis").classList.toggle("active", newMode === "tulis");
   document.getElementById("panelPilganIndo").classList.toggle("active", newMode === "pilganIndo");
   document.getElementById("panelPilganHanzi").classList.toggle("active", newMode === "pilganHanzi");
   document.getElementById("panelTesCard").classList.toggle("active", newMode === "tesCard");
+  document.getElementById("panelKarakter").classList.toggle("active", newMode === "karakter");
   if (newMode !== "tes") refreshAllPracticeAvailability();
 }
 
@@ -1338,6 +1730,7 @@ document.getElementById("tabTulis").addEventListener("click", () => setMode("tul
 document.getElementById("tabPilganIndo").addEventListener("click", () => setMode("pilganIndo"));
 document.getElementById("tabPilganHanzi").addEventListener("click", () => setMode("pilganHanzi"));
 document.getElementById("tabTesCard").addEventListener("click", () => setMode("tesCard"));
+document.getElementById("tabKarakter").addEventListener("click", () => setMode("karakter"));
 
 refreshAllPracticeAvailability();
 </script>
