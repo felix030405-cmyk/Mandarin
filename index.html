@@ -546,6 +546,10 @@
       </div>
     </div>
 
+    <div class="btn-row">
+      <button class="btn-outline" id="tcPrevBtn">◀ SEBELUMNYA</button>
+      <button class="btn-red" id="tcSalahBtn">✗ SALAH</button>
+    </div>
     <button class="btn-primary" id="tcNextBtn">SELANJUTNYA ▶</button>
   </div>
 
@@ -1188,8 +1192,10 @@ const pilganHanziController = createMcqController({
 // ======================================================================
 
 let tcQueue = null;
+let tcHistoryStack = null;
 let tcCurrentEntry = null;
-let tcIndex = 0;
+let tcAttemptNumber = 0;
+let tcWrongAttempts = 0;
 let tcTotal = 0;
 let tcFlipped = false;
 
@@ -1206,8 +1212,10 @@ function refreshTcAvailability() {
 function startTesCard() {
   if (!masterEntries || masterEntries.length < 1) return;
   tcQueue = fisherYatesShuffle(masterEntries);
-  tcTotal = tcQueue.length;
-  tcIndex = 0;
+  tcHistoryStack = [];
+  tcTotal = masterEntries.length;
+  tcAttemptNumber = 0;
+  tcWrongAttempts = 0;
 
   document.getElementById("tcIntro").style.display = "none";
   document.getElementById("tcComplete").style.display = "none";
@@ -1216,17 +1224,20 @@ function startTesCard() {
 }
 
 function showTcCard() {
-  if (tcIndex >= tcQueue.length) {
+  if (tcQueue.length === 0) {
     showTcComplete();
     return;
   }
-  tcCurrentEntry = tcQueue[tcIndex];
+  tcCurrentEntry = tcQueue[0];
+  tcAttemptNumber += 1;
   tcFlipped = false;
 
-  document.getElementById("tcProgress").textContent = `Kartu ke-${tcIndex + 1} dari ${tcTotal}`;
+  document.getElementById("tcProgress").textContent =
+    `Kartu ke-${tcAttemptNumber} • Sisa ${tcQueue.length} dari ${tcTotal}`;
   document.getElementById("tcFrontText").innerHTML = highlightPause(tcCurrentEntry.arti);
   document.getElementById("tcFront").style.display = "block";
   document.getElementById("tcBack").style.display = "none";
+  document.getElementById("tcPrevBtn").disabled = tcHistoryStack.length === 0;
 }
 
 function flipTcCard() {
@@ -1246,15 +1257,41 @@ function flipTcCard() {
   }
 }
 
+// "Selanjutnya": current card is done — move it out of the queue into history
+// (so "Sebelumnya" can bring it back) and show the next one.
 function nextTcCard() {
-  tcIndex += 1;
+  if (!tcCurrentEntry) return;
+  const passedEntry = tcQueue.shift();
+  tcHistoryStack.push(passedEntry);
+  showTcCard();
+}
+
+// "Sebelumnya": undo the last "Selanjutnya" — put that card back at the front
+// of the queue and show it again (in case Next was tapped by accident).
+function prevTcCard() {
+  if (!tcHistoryStack || tcHistoryStack.length === 0) return;
+  const prevEntry = tcHistoryStack.pop();
+  tcQueue.unshift(prevEntry);
+  showTcCard();
+}
+
+// "Salah": same requeue mechanism as Tulis/Pilgan — reshuffle the ENTIRE
+// remaining queue (current card stays in it), guaranteeing it resurfaces
+// again later at a random position, instead of being marked done.
+function markTcSalah() {
+  if (!tcCurrentEntry) return;
+  tcWrongAttempts += 1;
+  tcQueue = fisherYatesShuffle(tcQueue);
   showTcCard();
 }
 
 function showTcComplete() {
   document.getElementById("tcSession").style.display = "none";
   document.getElementById("tcComplete").style.display = "block";
-  document.getElementById("tcCompleteStats").innerHTML = `Total kartu: <b>${tcTotal}</b>`;
+  document.getElementById("tcCompleteStats").innerHTML =
+    `Total kartu: <b>${tcTotal}</b><br>` +
+    `Total dilihat: <b>${tcAttemptNumber}</b><br>` +
+    `Salah: <b>${tcWrongAttempts}</b> kali`;
 }
 
 document.getElementById("tcCard").addEventListener("click", flipTcCard);
@@ -1263,6 +1300,14 @@ document.getElementById("tcRestartBtn").addEventListener("click", startTesCard);
 document.getElementById("tcNextBtn").addEventListener("click", (e) => {
   e.stopPropagation();
   nextTcCard();
+});
+document.getElementById("tcPrevBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  prevTcCard();
+});
+document.getElementById("tcSalahBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  markTcSalah();
 });
 
 function refreshAllPracticeAvailability() {
