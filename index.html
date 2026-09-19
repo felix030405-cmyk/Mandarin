@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mandarin</title>
+<style>
+  :root {
+    --primary: #1565C0;
+    --primary-dark: #0D47A1;
+    --green: #2E7D32;
+    --green-bg: #E8F5E9;
+    --red: #C62828;
+    --red-bg: #FFEBEE;
+    --gray-bg: #F5F5F5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Roboto, "Segoe UI", sans-serif;
+    background: #FAFAFA;
+    color: #212121;
+    padding: 20px 16px 40px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 4px 0 16px;
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    background: #ECEFF1;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 18px;
+  }
+  .tab {
+    flex: 1 1 30%;
+    min-width: 90px;
+    text-align: center;
+    padding: 10px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #555;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab.active {
+    background: var(--primary);
+    color: white;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  textarea {
+    width: 100%;
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1.5px solid #BDBDBD;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-family: -apple-system, Roboto, "Segoe UI", sans-serif;
+    resize: vertical;
+    min-height: 160px;
+    line-height: 1.5;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  .hint {
+    font-size: 12px;
+    color: #888;
+    margin: -2px 0 14px;
+  }
+  button {
+    width: 100%;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 10px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:active { transform: scale(0.98); }
+  button:disabled { cursor: default; }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:active { background: var(--primary-dark); }
+  .btn-outline {
+    background: white;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+  }
+  .btn-text {
+    background: transparent;
+    color: var(--primary);
+  }
+  .btn-green {
+    background: var(--green);
+    color: white;
+  }
+  .btn-red {
+    background: var(--red);
+    color: white;
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-row button {
+    flex: 1;
+  }
+  .icon-btn {
+    width: auto;
+    padding: 6px 10px;
+    margin: 0;
+    font-size: 15px;
+    border-radius: 8px;
+    background: #ECEFF1;
+    color: var(--primary-dark);
+    line-height: 1;
+  }
+  .option-btn {
+    text-align: left;
+    font-weight: 600;
+  }
+  .option-btn.option-correct {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+    opacity: 1;
+  }
+  .option-btn.option-wrong {
+    background: var(--red);
+    color: white;
+    border-color: var(--red);
+    opacity: 1;
+  }
+  .card {
+    border-radius: 10px;
+    padding: 14px;
+    margin: 8px 0 16px;
+  }
+  .card.error { background: var(--red-bg); color: var(--red); font-size: 14px; white-space: pre-line; }
+  .card.info { background: #E3F2FD; color: var(--primary-dark); font-size: 13px; }
+  .card.verify-ok { background: var(--green-bg); }
+  .card.verify-bad { background: var(--red-bg); }
+  .card.result { background: var(--gray-bg); padding: 0; }
+  .verify-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 2px 0;
+  }
+  .verify-status {
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 6px;
+  }
+  .verify-status.ok { color: var(--green); }
+  .verify-status.bad { color: var(--red); }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 18px 0 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .run-count {
+    font-size: 12px;
+    color: #888;
+    font-weight: 400;
+  }
+  .result-box {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 14px;
+    font-family: "SFMono-Regular", Menlo, monospace;
+    font-size: 15px;
+    white-space: pre-line;
+    line-height: 1.6;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #212121;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+  hr.sep {
+    border: none;
+    border-top: 1px solid #E0E0E0;
+    margin: 22px 0;
+  }
+  #expandModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 1000;
+    padding: 18px 16px;
+    overflow-y: auto;
+  }
+  .expand-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .expand-header span {
+    font-weight: 700;
+    font-size: 19px;
+  }
+  #expandModalContent {
+    font-family: "SFMono-Regular", Menlo, monospace;
+    font-size: 19px;
+    white-space: pre-line;
+    line-height: 1.9;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  .latihan-progress {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .soal-card {
+    text-align: center;
+    padding: 22px 14px;
+  }
+  .soal-card-text {
+    font-size: 26px;
+    font-weight: 700;
+  }
+  .canvas-wrap {
+    border: 1.5px solid #BDBDBD;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background: white;
+  }
+  #latihanCanvas {
+    display: block;
+    width: 100%;
+    height: 260px;
+    touch-action: none;
+  }
+  .answer-card {
+    text-align: center;
+    padding: 18px 14px;
+  }
+  .answer-card-text {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .complete-card {
+    text-align: center;
+    padding: 24px 16px;
+  }
+  .flashcard {
+    cursor: pointer;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .flash-hanzi {
+    font-size: 60px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .flash-pinyin-arti {
+    font-size: 18px;
+    text-align: center;
+  }
+  .speaker-btn {
+    width: auto;
+    display: inline-block;
+    padding: 3px 8px;
+    margin: 0 2px;
+    font-size: 15px;
+    border-radius: 8px;
+    background: #ECEFF1;
+    color: var(--primary-dark);
+    line-height: 1;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<h1>MANDARIN</h1>
+
+<div class="tabs">
+  <div class="tab active" id="tabTes">TES</div>
+  <div class="tab" id="tabTulis">TULIS</div>
+  <div class="tab" id="tabPilganIndo">PILGAN INDO</div>
+  <div class="tab" id="tabPilganHanzi">PILGAN HANZI</div>
+  <div class="tab" id="tabTesCard">TES CARD</div>
+  <div class="tab" id="tabKarakter">KARAKTER</div>
+</div>
+
+<!-- MENU 1: TES (Master Data + generate Soal/Jawaban list, unchanged content, renamed from "Mandarin") -->
+<div class="mode-panel active" id="panelTes">
+
+  <div class="section-title" style="margin-top:0;"><span>Master Data</span></div>
+  <div class="hint">Format tiap baris: <b>Hanzi - Pinyin - Arti</b> (dipisah spasi-strip-spasi). Contoh: <code>我 - wo - saya</code>. Kata "(Pause)" di akhir pinyin/arti akan otomatis di-bold saat ditampilkan.</div>
+  <textarea id="masterInput" placeholder="我 - wo - saya&#10;你 - ni - kamu&#10;他 - ta - dia"></textarea>
+  <button class="btn-primary" id="saveMasterBtn">SIMPAN MASTER DATA</button>
+  <div id="masterStatusArea"></div>
+
+  <hr class="sep">
+
+  <div class="section-title" style="margin-top:0;"><span>Generate Soal</span></div>
+  <button class="btn-primary" id="generateQuizBtn">GENERATE SOAL BARU</button>
+
+  <div id="errorAreaMandarin"></div>
+  <div id="verifyAreaMandarin"></div>
+
+  <div id="quizSection" style="display:none;">
+
+    <div class="section-title">
+      <span>Soal</span>
+      <span class="section-title-right">
+        <span class="run-count" id="runCountLabelMandarin"></span>
+        <button class="icon-btn" id="expandSoalBtn" title="Perbesar tampilan">⤢</button>
+      </span>
+    </div>
+    <div class="card result"><div class="result-box" id="soalBox"></div></div>
+    <button class="btn-primary" id="copySoalBtn">COPY SOAL</button>
+
+    <div class="section-title">
+      <span>Jawaban</span>
+      <span class="section-title-right">
+        <button class="icon-btn" id="expandJawabanBtn" title="Perbesar tampilan">⤢</button>
+      </span>
+    </div>
+    <div class="card result"><div class="result-box" id="jawabanBox"></div></div>
+    <button class="btn-primary" id="copyJawabanBtn">COPY JAWABAN</button>
+
+    <button class="btn-text" id="randomizeAgainMandarinBtn">RANDOMIZE AGAIN</button>
+  </div>
+</div>
+
+<!-- MENU 2: TULIS (interactive board, self-graded, wrong answers requeued) -->
+<div class="mode-panel" id="panelTulis">
+
+  <div id="latihanNoData" class="card info" style="display:none;">
+    Belum ada Master Data. Isi &amp; simpan dulu di tab <b>TES</b>, baru kembali ke sini.
+  </div>
+
+  <div id="latihanIntro" style="display:none;">
+    <div class="hint" style="margin-top:0;">
+      Soal muncul dalam Bahasa Indonesia. Tulis hanzi-nya di papan, tekan <b>Selesai Menulis</b>,
+      lalu nilai sendiri dengan kunci jawaban yang muncul. Yang salah akan diacak ulang dan muncul lagi
+      sampai dijawab benar.
+    </div>
+    <button class="btn-primary" id="startLatihanBtn">MULAI LATIHAN</button>
+  </div>
+
+  <div id="latihanSession" style="display:none;">
+    <div class="latihan-progress" id="latihanProgress"></div>
+
+    <div class="card result soal-card">
+      <div class="soal-card-text" id="latihanSoalText"></div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="latihanCanvas"></canvas>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-outline" id="clearCanvasBtn">HAPUS PAPAN</button>
+      <button class="btn-primary" id="finishWritingBtn">SELESAI MENULIS</button>
+    </div>
+
+    <div id="latihanAnswerPanel" style="display:none;">
+      <div class="card verify-ok answer-card">
+        <div class="hint" style="margin:0 0 4px;">Kunci jawaban</div>
+        <div class="answer-card-text" id="latihanAnswerText"></div>
+      </div>
+      <div class="hint">Papan masih bisa diedit kalau mau membetulkan tulisan sebelum menilai.</div>
+      <div class="btn-row">
+        <button class="btn-green" id="markBenarBtn">✓ BENAR</button>
+        <button class="btn-red" id="markSalahBtn">✗ SALAH</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="latihanComplete" style="display:none;">
+    <div class="card verify-ok complete-card">
+      <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+      <div id="latihanCompleteStats" style="font-size:14px;"></div>
+    </div>
+    <button class="btn-primary" id="restartLatihanBtn">MULAI ULANG</button>
+  </div>
+
+</div>
+
+<!-- MENU 3: PILGAN INDO (soal = arti/Indonesia, pilihan = hanzi, kunci = hanzi - pinyin) -->
+<div class="mode-panel" id="panelPilganIndo">
+
+  <div id="piNoData" class="card info" style="display:none;">
+    Belum ada Master Data (minimal 4 entri). Isi &amp; simpan dulu di tab <b>TES</b>, baru kembali ke sini.
+  </div>
+
+  <div id="piIntro" style="display:none;">
+    <div class="hint" style="margin-top:0;">
+      Soal berupa arti Bahasa Indonesia. Pilih hanzi yang tepat dari 4 pilihan. Sistem langsung
+      mengoreksi otomatis. Yang salah akan diacak ulang dan muncul lagi sampai dijawab benar.
+    </div>
+    <button class="btn-primary" id="piStartBtn">MULAI PILGAN</button>
+  </div>
+
+  <div id="piSession" style="display:none;">
+    <div class="latihan-progress" id="piProgress"></div>
+    <div class="card result soal-card">
+      <div class="soal-card-text" id="piSoalText"></div>
+    </div>
+    <div id="piOptions"></div>
+
+    <div id="piAnswerPanel" style="display:none;">
+      <div class="card verify-ok answer-card">
+        <div class="hint" style="margin:0 0 4px;">Kunci jawaban</div>
+        <div class="answer-card-text" id="piAnswerText"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-outline" id="piPrevBtn">◀ SEBELUMNYA</button>
+        <button class="btn-primary" id="piNextBtn">LANJUT ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="piComplete" style="display:none;">
+    <div class="card verify-ok complete-card">
+      <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+      <div id="piCompleteStats" style="font-size:14px;"></div>
+    </div>
+    <div id="piWrongList"></div>
+    <button class="btn-primary" id="piRestartBtn">MULAI ULANG</button>
+  </div>
+
+</div>
+
+<!-- MENU 4: PILGAN HANZI (soal = hanzi, pilihan = arti/Indonesia, kunci = pinyin - arti) -->
+<div class="mode-panel" id="panelPilganHanzi">
+
+  <div id="phNoData" class="card info" style="display:none;">
+    Belum ada Master Data (minimal 4 entri). Isi &amp; simpan dulu di tab <b>TES</b>, baru kembali ke sini.
+  </div>
+
+  <div id="phIntro" style="display:none;">
+    <div class="hint" style="margin-top:0;">
+      Soal berupa hanzi. Pilih arti Bahasa Indonesia yang tepat dari 4 pilihan. Sistem langsung
+      mengoreksi otomatis. Yang salah akan diacak ulang dan muncul lagi sampai dijawab benar.
+    </div>
+    <button class="btn-primary" id="phStartBtn">MULAI PILGAN</button>
+  </div>
+
+  <div id="phSession" style="display:none;">
+    <div class="latihan-progress" id="phProgress"></div>
+    <div class="card result soal-card">
+      <div class="soal-card-text" id="phSoalText"></div>
+    </div>
+    <div id="phOptions"></div>
+
+    <div id="phAnswerPanel" style="display:none;">
+      <div class="card verify-ok answer-card">
+        <div class="hint" style="margin:0 0 4px;">Kunci jawaban</div>
+        <div class="answer-card-text" id="phAnswerText"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-outline" id="phPrevBtn">◀ SEBELUMNYA</button>
+        <button class="btn-primary" id="phNextBtn">LANJUT ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="phComplete" style="display:none;">
+    <div class="card verify-ok complete-card">
+      <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+      <div id="phCompleteStats" style="font-size:14px;"></div>
+    </div>
+    <div id="phWrongList"></div>
+    <button class="btn-primary" id="phRestartBtn">MULAI ULANG</button>
+  </div>
+
+</div>
+
+<!-- MENU 5: TES CARD (flashcard, one at a time, tap to flip, no grading — just sequential review) -->
+<div class="mode-panel" id="panelTesCard">
+
+  <div id="tcNoData" class="card info" style="display:none;">
+    Belum ada Master Data. Isi &amp; simpan dulu di tab <b>TES</b>, baru kembali ke sini.
+  </div>
+
+  <div id="tcIntro" style="display:none;">
+    <div class="hint" style="margin-top:0;">
+      Soal muncul satu per satu dalam Bahasa Indonesia. Tap kartu untuk membalik dan melihat jawaban
+      (hanzi besar, lalu pinyin &amp; arti), lalu tekan Selanjutnya untuk lanjut ke soal berikutnya.
+    </div>
+    <button class="btn-primary" id="tcStartBtn">MULAI</button>
+  </div>
+
+  <div id="tcSession" style="display:none;">
+    <div class="latihan-progress" id="tcProgress"></div>
+
+    <div class="card result flashcard" id="tcCard">
+      <div id="tcFront">
+        <div class="soal-card-text" id="tcFrontText" style="text-align:center;"></div>
+        <div class="hint" style="margin:10px 0 0; text-align:center;">Tap kartu untuk lihat jawaban</div>
+      </div>
+      <div id="tcBack" style="display:none;">
+        <div class="flash-hanzi" id="tcBackHanzi"></div>
+        <div class="flash-pinyin-arti" id="tcBackPinyinArti"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-outline" id="tcPrevBtn">◀ SEBELUMNYA</button>
+      <button class="btn-red" id="tcSalahBtn">✗ SALAH</button>
+    </div>
+    <button class="btn-primary" id="tcNextBtn">SELANJUTNYA ▶</button>
+  </div>
+
+  <div id="tcComplete" style="display:none;">
+    <div class="card verify-ok complete-card">
+      <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+      <div id="tcCompleteStats" style="font-size:14px;"></div>
+    </div>
+    <div id="tcWrongList"></div>
+    <button class="btn-primary" id="tcRestartBtn">MULAI ULANG</button>
+  </div>
+
+</div>
+
+<!-- MENU 6: KARAKTER (auto-pecah dari Master Data TES, per karakter — bukan per kata) -->
+<div class="mode-panel" id="panelKarakter">
+
+  <div id="charNoData" class="card info" style="display:none;">
+    Belum ada Master Data. Isi &amp; simpan dulu di tab <b>TES</b>, baru kembali ke sini.
+  </div>
+
+  <div id="charInfo" style="display:none;">
+    <div id="charSummaryCollapsedBar" class="card info" style="display:none; cursor:pointer;">
+      ℹ️ Info Master Data (tap untuk tampilkan)
+    </div>
+    <div id="charSummaryExpanded">
+      <div class="card info" id="charSummaryCard"></div>
+      <div id="charNotEnoughWarning" class="card error" style="display:none;">
+        Karakter/suku kata unik yang berhasil dipecah masih kurang dari 4 — belum cukup untuk membuat pilihan ganda 4 opsi.
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin:-6px 0 14px;">
+        <button class="icon-btn" id="charDetailBtn" style="display:none;">Rincian</button>
+        <button class="icon-btn" id="charHideBtn">Sembunyikan</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs" id="charSubTabs" style="margin-top:4px;">
+    <div class="tab active" id="subTabCharHanzi">HANZI</div>
+    <div class="tab" id="subTabCharPinyin">PINYIN</div>
+  </div>
+
+  <!-- SUB-MENU: HANZI (soal = 1 karakter, pilihan = 4 pinyin) -->
+  <div class="mode-panel active" id="subPanelCharHanzi">
+    <div id="chHanziIntro" style="display:none;">
+      <div class="hint" style="margin-top:0;">
+        Soal berupa 1 karakter hanzi (bukan kata utuh). Pilih pinyin yang tepat dari 4 pilihan.
+        Kalau karakternya punya lebih dari satu bacaan yang sah, semuanya dianggap benar.
+      </div>
+      <button class="btn-primary" id="chHanziStartBtn">MULAI PILGAN</button>
+    </div>
+
+    <div id="chHanziSession" style="display:none;">
+      <div class="latihan-progress" id="chHanziProgress"></div>
+      <div class="card result soal-card">
+        <div class="soal-card-text" id="chHanziSoalText" style="font-size:44px;"></div>
+      </div>
+      <div id="chHanziOptions"></div>
+
+      <div id="chHanziAnswerPanel" style="display:none;">
+        <div class="card verify-ok answer-card">
+          <div class="hint" style="margin:0 0 4px;">Kunci jawaban (semua bacaan sah)</div>
+          <div class="answer-card-text" id="chHanziAnswerText"></div>
+        </div>
+        <div id="chHanziWordList"></div>
+        <div class="btn-row">
+          <button class="btn-outline" id="chHanziPrevBtn">◀ SEBELUMNYA</button>
+          <button class="btn-primary" id="chHanziNextBtn">LANJUT ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="chHanziComplete" style="display:none;">
+      <div class="card verify-ok complete-card">
+        <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+        <div id="chHanziCompleteStats" style="font-size:14px;"></div>
+      </div>
+      <div id="chHanziWrongList"></div>
+      <button class="btn-primary" id="chHanziRestartBtn">MULAI ULANG</button>
+    </div>
+  </div>
+
+  <!-- SUB-MENU: PINYIN (soal = 1 suku kata pinyin, pilihan = 4 karakter) -->
+  <div class="mode-panel" id="subPanelCharPinyin">
+    <div id="chPinyinIntro" style="display:none;">
+      <div class="hint" style="margin-top:0;">
+        Soal berupa 1 suku kata pinyin. Pilih karakter hanzi yang tepat dari 4 pilihan.
+        Kalau ada lebih dari satu karakter yang sah untuk suku kata itu, semuanya dianggap benar.
+      </div>
+      <button class="btn-primary" id="chPinyinStartBtn">MULAI PILGAN</button>
+    </div>
+
+    <div id="chPinyinSession" style="display:none;">
+      <div class="latihan-progress" id="chPinyinProgress"></div>
+      <div class="card result soal-card">
+        <div class="soal-card-text" id="chPinyinSoalText"></div>
+      </div>
+      <div id="chPinyinOptions"></div>
+
+      <div id="chPinyinAnswerPanel" style="display:none;">
+        <div class="card verify-ok answer-card">
+          <div class="hint" style="margin:0 0 4px;">Kunci jawaban (semua karakter sah)</div>
+          <div class="answer-card-text" id="chPinyinAnswerText" style="font-size:32px;"></div>
+        </div>
+        <div id="chPinyinWordList"></div>
+        <div class="btn-row">
+          <button class="btn-outline" id="chPinyinPrevBtn">◀ SEBELUMNYA</button>
+          <button class="btn-primary" id="chPinyinNextBtn">LANJUT ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="chPinyinComplete" style="display:none;">
+      <div class="card verify-ok complete-card">
+        <div style="font-size:20px; font-weight:700; margin-bottom:8px;">🎉 Selesai!</div>
+        <div id="chPinyinCompleteStats" style="font-size:14px;"></div>
+      </div>
+      <div id="chPinyinWrongList"></div>
+      <button class="btn-primary" id="chPinyinRestartBtn">MULAI ULANG</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Fullscreen expand modal (shared by Soal / Jawaban in TES) -->
+<div id="expandModal">
+  <div class="expand-header">
+    <span id="expandModalTitle"></span>
+    <button class="icon-btn" id="expandModalClose">✕ Tutup</button>
+  </div>
+  <div id="expandModalContent"></div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+// ======================================================================
+// SHARED CORE (randomness, formatting, toast/copy, verification display)
+// ======================================================================
+
+// Rejection-sampling random integer in [0, maxExclusive) using crypto for a good
+// uniform random source (avoids modulo bias from a naive Math.random() * n).
+function secureRandomInt(maxExclusive) {
+  if (maxExclusive <= 0) return 0;
+  const array = new Uint32Array(1);
+  const limit = Math.floor(0xFFFFFFFF / maxExclusive) * maxExclusive;
+  let x;
+  do {
+    crypto.getRandomValues(array);
+    x = array[0];
+  } while (x >= limit);
+  return x % maxExclusive;
+}
+
+// Fisher-Yates (Durstenfeld) shuffle - works for any array.
+// Every element appears exactly once, every permutation equally likely.
+function fisherYatesShuffle(sourceArray) {
+  const arr = sourceArray.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = secureRandomInt(i + 1);
+    const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  return arr;
+}
+
+function verifyNumbers(result, start, end) {
+  const expectedTotal = end - start + 1;
+  const seen = new Uint8Array(expectedTotal);
+  let duplicate = 0;
+  let outOfRange = 0;
+  for (const num of result) {
+    if (num < start || num > end) { outOfRange++; continue; }
+    const idx = num - start;
+    if (seen[idx]) duplicate++; else seen[idx] = 1;
+  }
+  let unique = 0;
+  for (let i = 0; i < seen.length; i++) if (seen[i]) unique++;
+  const missing = expectedTotal - unique;
+  const isValid = result.length === expectedTotal && unique === expectedTotal &&
+                  missing === 0 && duplicate === 0 && outOfRange === 0;
+  return { total: result.length, unique, missing, duplicate, outOfRange, isValid };
+}
+
+function showToast() {
+  const toast = document.getElementById("toast");
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1200);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(showToast).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+  showToast();
+}
+
+function renderVerificationInto(elementId, v, labels) {
+  const cls = v.isValid ? "verify-ok" : "verify-bad";
+  const rows = [
+    `<div class="verify-row"><span>Total:</span><span>${v.total}</span></div>`,
+    `<div class="verify-row"><span>${labels.unique}:</span><span>${v.unique}</span></div>`,
+    `<div class="verify-row"><span>${labels.missing}:</span><span>${v.missing}</span></div>`,
+    `<div class="verify-row"><span>${labels.duplicate}:</span><span>${v.duplicate}</span></div>`,
+  ];
+  if (labels.outOfRange) {
+    rows.push(`<div class="verify-row"><span>${labels.outOfRange}:</span><span>${v.outOfRange}</span></div>`);
+  }
+  document.getElementById(elementId).innerHTML = `
+    <div class="section-title">Verification</div>
+    <div class="card ${cls}">
+      ${rows.join("")}
+      <div class="verify-status ${v.isValid ? 'ok' : 'bad'}">${v.isValid ? 'VALID ✓' : 'INVALID ✗'}</div>
+    </div>
+  `;
+}
+
+function renderErrorInto(elementId, message) {
+  document.getElementById(elementId).innerHTML = message
+    ? `<div class="card error">${message}</div>` : "";
+}
+
+// Renders a dedupe'd list of wrong items on a completion screen. `items` is an
+// array of already-formatted display strings (one per line).
+function renderWrongList(elementId, items) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  if (!items || items.length === 0) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = `
+    <div class="hint" style="text-align:left; margin:14px 0 6px;">Perlu diulang (${items.length}):</div>
+    <div class="card result"><div class="result-box">${items.join("\n")}</div></div>
+  `;
+}
+
+// Escapes HTML special chars, then bolds every "(Pause)" occurrence (any casing).
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function highlightPause(s) {
+  return escapeHtml(s).replace(/\(pause\)/gi, (m) => `<b>${m}</b>`);
+}
+
+// ---------- Text-to-speech (always speaks the hanzi text, never pinyin — feeding
+// romanized pinyin to a TTS engine makes it read like English, not Mandarin) ----------
+
+function speakHanzi(hanziText) {
+  if (!("speechSynthesis" in window)) {
+    alert("Text-to-speech tidak didukung di browser ini.");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(hanziText);
+  utter.lang = "zh-CN";
+  utter.rate = 0.85;
+  window.speechSynthesis.speak(utter);
+}
+
+// Replaces every <span class="speaker-slot"> inside containerEl with a real
+// speaker button that reads hanziText aloud. Using a placeholder + replaceWith
+// (instead of embedding text into an inline onclick string) avoids any escaping
+// issues with special characters.
+function attachSpeakerButtons(containerEl, hanziText) {
+  if (!containerEl) return;
+  containerEl.querySelectorAll(".speaker-slot").forEach((slot) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "speaker-btn";
+    btn.textContent = "🔊";
+    btn.setAttribute("aria-label", "Dengarkan pengucapan");
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      speakHanzi(hanziText);
+    });
+    slot.replaceWith(btn);
+  });
+}
+
+// ======================================================================
+// MENU 1: TES — Master Data + Generate Soal/Jawaban (text list)
+// ======================================================================
+
+const MASTER_STORAGE_KEY = "nr_mandarin_master_raw";
+
+let masterEntries = null;      // [{hanzi, pinyin, arti}, ...]
+let currentQuizOrder = null;   // shuffled copy of masterEntries
+let runCountMandarin = 0;
+let lastSoalHtml = "";
+let lastJawabanHtml = "";
+
+function parseMasterData(text) {
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+  const entries = [];
+  const errors = [];
+  lines.forEach((line, idx) => {
+    const parts = line.split(" - ").map(p => p.trim());
+    if (parts.length !== 3 || parts.some(p => p.length === 0)) {
+      errors.push(`Baris ${idx + 1}: "${line}" — format harus "Hanzi - Pinyin - Arti"`);
+      return;
+    }
+    entries.push({ hanzi: parts[0], pinyin: parts[1], arti: parts[2] });
+  });
+  return { entries, errors };
+}
+
+function saveMasterData() {
+  const raw = document.getElementById("masterInput").value;
+  const { entries, errors } = parseMasterData(raw);
+
+  if (errors.length > 0) {
+    document.getElementById("masterStatusArea").innerHTML =
+      `<div class="card error">Ada ${errors.length} baris tidak sesuai format:\n${errors.join("\n")}</div>`;
+    return;
+  }
+  if (entries.length === 0) {
+    document.getElementById("masterStatusArea").innerHTML =
+      `<div class="card error">Master data kosong. Tempel minimal 1 baris data.</div>`;
+    return;
+  }
+
+  masterEntries = entries;
+  try { localStorage.setItem(MASTER_STORAGE_KEY, raw); } catch (e) { /* storage may be unavailable, ignore */ }
+
+  document.getElementById("masterStatusArea").innerHTML =
+    `<div class="card info">Master data tersimpan: <b>${entries.length} entri</b>.</div>`;
+
+  currentQuizOrder = null;
+  document.getElementById("quizSection").style.display = "none";
+  renderErrorInto("errorAreaMandarin", null);
+  document.getElementById("verifyAreaMandarin").innerHTML = "";
+
+  refreshAllPracticeAvailability();
+}
+
+function generateQuiz() {
+  if (!masterEntries || masterEntries.length === 0) {
+    renderErrorInto("errorAreaMandarin", "Simpan Master Data dulu sebelum generate soal.");
+    return;
+  }
+  if (masterEntries.length < 2) {
+    renderErrorInto("errorAreaMandarin", "Minimal butuh 2 entri di Master Data agar bisa diacak.");
+    return;
+  }
+
+  renderErrorInto("errorAreaMandarin", null);
+
+  const n = masterEntries.length;
+  let indices, v, attempts = 0;
+  do {
+    const base = new Array(n);
+    for (let i = 0; i < n; i++) base[i] = i;
+    indices = fisherYatesShuffle(base);
+    v = verifyNumbers(indices, 0, n - 1);
+    attempts++;
+  } while (!v.isValid && attempts < 5);
+
+  if (!v.isValid) {
+    renderErrorInto("errorAreaMandarin", "Randomization gagal diverifikasi setelah 5 percobaan. Coba lagi.");
+    return;
+  }
+
+  currentQuizOrder = indices.map(i => masterEntries[i]);
+  runCountMandarin += 1;
+
+  renderVerificationInto("verifyAreaMandarin", v, { unique: "Entri unik", missing: "Hilang", duplicate: "Duplikat", outOfRange: "Di luar data" });
+
+  const soalHtml = currentQuizOrder.map((e, i) => `${i + 1}. ${highlightPause(e.arti)}`).join("\n");
+  const jawabanHtml = currentQuizOrder.map((e, i) => `${i + 1}. ${highlightPause(e.hanzi)} - ${highlightPause(e.pinyin)}`).join("\n");
+
+  lastSoalHtml = soalHtml;
+  lastJawabanHtml = jawabanHtml;
+
+  document.getElementById("quizSection").style.display = "block";
+  document.getElementById("soalBox").innerHTML = soalHtml;
+  document.getElementById("jawabanBox").innerHTML = jawabanHtml;
+  document.getElementById("runCountLabelMandarin").textContent = `Run #${runCountMandarin}`;
+}
+
+document.getElementById("saveMasterBtn").addEventListener("click", saveMasterData);
+document.getElementById("generateQuizBtn").addEventListener("click", generateQuiz);
+document.getElementById("randomizeAgainMandarinBtn").addEventListener("click", generateQuiz);
+
+document.getElementById("copySoalBtn").addEventListener("click", () => {
+  if (currentQuizOrder) {
+    const text = currentQuizOrder.map((e, i) => `${i + 1}. ${e.arti}`).join("\n");
+    copyText(text);
+  }
+});
+document.getElementById("copyJawabanBtn").addEventListener("click", () => {
+  if (currentQuizOrder) {
+    const text = currentQuizOrder.map((e, i) => `${i + 1}. ${e.hanzi} - ${e.pinyin}`).join("\n");
+    copyText(text);
+  }
+});
+
+function openExpand(title, html) {
+  document.getElementById("expandModalTitle").textContent = title;
+  document.getElementById("expandModalContent").innerHTML = html;
+  document.getElementById("expandModal").style.display = "block";
+  window.scrollTo(0, 0);
+}
+function closeExpand() {
+  document.getElementById("expandModal").style.display = "none";
+}
+document.getElementById("expandSoalBtn").addEventListener("click", () => {
+  if (currentQuizOrder) openExpand("Soal", lastSoalHtml);
+});
+document.getElementById("expandJawabanBtn").addEventListener("click", () => {
+  if (currentQuizOrder) openExpand("Jawaban", lastJawabanHtml);
+});
+document.getElementById("expandModalClose").addEventListener("click", closeExpand);
+
+(function restoreMasterData() {
+  try {
+    const saved = localStorage.getItem(MASTER_STORAGE_KEY);
+    if (saved) {
+      document.getElementById("masterInput").value = saved;
+      const { entries, errors } = parseMasterData(saved);
+      if (errors.length === 0 && entries.length > 0) {
+        masterEntries = entries;
+        document.getElementById("masterStatusArea").innerHTML =
+          `<div class="card info">Master data tersimpan sebelumnya dimuat: <b>${entries.length} entri</b>.</div>`;
+      }
+    }
+  } catch (e) { /* localStorage unavailable, ignore */ }
+})();
+
+// ======================================================================
+// MENU 2: TULIS — interactive writing board, self-graded, requeue on salah
+// ======================================================================
+
+let latihanQueue = null;
+let latihanCurrentEntry = null;
+let latihanAttemptNumber = 0;
+let latihanWrongAttempts = 0;
+let latihanTotal = 0;
+let latihanCtx = null;
+let latihanDrawing = false;
+let latihanLastX = 0, latihanLastY = 0;
+
+function refreshLatihanAvailability() {
+  const hasData = !!(masterEntries && masterEntries.length >= 2);
+  document.getElementById("latihanNoData").style.display = hasData ? "none" : "block";
+  document.getElementById("latihanIntro").style.display = hasData ? "block" : "none";
+  if (!hasData) {
+    document.getElementById("latihanSession").style.display = "none";
+    document.getElementById("latihanComplete").style.display = "none";
+  }
+}
+
+function setupLatihanCanvas() {
+  const canvas = document.getElementById("latihanCanvas");
+  const ratio = window.devicePixelRatio || 1;
+  const cssWidth = canvas.clientWidth;
+  const cssHeight = canvas.clientHeight || 260;
+  canvas.width = Math.max(1, Math.round(cssWidth * ratio));
+  canvas.height = Math.max(1, Math.round(cssHeight * ratio));
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(ratio, ratio);
+  ctx.lineWidth = 4;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = "#212121";
+  latihanCtx = ctx;
+  clearLatihanCanvas();
+}
+
+function clearLatihanCanvas() {
+  if (!latihanCtx) return;
+  const canvas = document.getElementById("latihanCanvas");
+  const cssWidth = canvas.clientWidth;
+  const cssHeight = canvas.clientHeight || 260;
+  latihanCtx.fillStyle = "#FFFFFF";
+  latihanCtx.fillRect(0, 0, cssWidth, cssHeight);
+}
+
+function latihanPointerPos(e) {
+  const canvas = document.getElementById("latihanCanvas");
+  const rect = canvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+function attachLatihanDrawingHandlers() {
+  const canvas = document.getElementById("latihanCanvas");
+  canvas.addEventListener("pointerdown", (e) => {
+    latihanDrawing = true;
+    const p = latihanPointerPos(e);
+    latihanLastX = p.x; latihanLastY = p.y;
+    e.preventDefault();
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!latihanDrawing || !latihanCtx) return;
+    const p = latihanPointerPos(e);
+    latihanCtx.beginPath();
+    latihanCtx.moveTo(latihanLastX, latihanLastY);
+    latihanCtx.lineTo(p.x, p.y);
+    latihanCtx.stroke();
+    latihanLastX = p.x; latihanLastY = p.y;
+    e.preventDefault();
+  });
+  const stop = () => { latihanDrawing = false; };
+  canvas.addEventListener("pointerup", stop);
+  canvas.addEventListener("pointerleave", stop);
+  canvas.addEventListener("pointercancel", stop);
+}
+
+function startLatihan() {
+  if (!masterEntries || masterEntries.length < 2) return;
+  latihanQueue = fisherYatesShuffle(masterEntries);
+  latihanTotal = masterEntries.length;
+  latihanAttemptNumber = 0;
+  latihanWrongAttempts = 0;
+
+  document.getElementById("latihanIntro").style.display = "none";
+  document.getElementById("latihanComplete").style.display = "none";
+  document.getElementById("latihanSession").style.display = "block";
+
+  requestAnimationFrame(() => {
+    setupLatihanCanvas();
+    showNextLatihanCard();
+  });
+}
+
+function showNextLatihanCard() {
+  if (latihanQueue.length === 0) {
+    showLatihanComplete();
+    return;
+  }
+  latihanCurrentEntry = latihanQueue[0];
+  latihanAttemptNumber += 1;
+
+  document.getElementById("latihanSoalText").innerHTML = highlightPause(latihanCurrentEntry.arti);
+  document.getElementById("latihanAnswerPanel").style.display = "none";
+  clearLatihanCanvas();
+  updateLatihanProgress();
+}
+
+function updateLatihanProgress() {
+  document.getElementById("latihanProgress").textContent =
+    `Soal ke-${latihanAttemptNumber} • Sisa ${latihanQueue.length} dari ${latihanTotal}`;
+}
+
+function finishWriting() {
+  if (!latihanCurrentEntry) return;
+  const answerHtml = `${highlightPause(latihanCurrentEntry.hanzi)} - ${highlightPause(latihanCurrentEntry.pinyin)} <span class="speaker-slot"></span>`;
+  const answerEl = document.getElementById("latihanAnswerText");
+  answerEl.innerHTML = answerHtml;
+  attachSpeakerButtons(answerEl, latihanCurrentEntry.hanzi);
+  document.getElementById("latihanAnswerPanel").style.display = "block";
+}
+
+function markBenar() {
+  if (!latihanCurrentEntry) return;
+  latihanQueue.shift();
+  showNextLatihanCard();
+}
+
+function markSalah() {
+  if (!latihanCurrentEntry) return;
+  latihanWrongAttempts += 1;
+  latihanQueue = fisherYatesShuffle(latihanQueue);
+  showNextLatihanCard();
+}
+
+function showLatihanComplete() {
+  document.getElementById("latihanSession").style.display = "none";
+  document.getElementById("latihanComplete").style.display = "block";
+  document.getElementById("latihanCompleteStats").innerHTML =
+    `Total soal: <b>${latihanTotal}</b><br>` +
+    `Total percobaan: <b>${latihanAttemptNumber}</b><br>` +
+    `Salah: <b>${latihanWrongAttempts}</b> kali`;
+}
+
+document.getElementById("startLatihanBtn").addEventListener("click", startLatihan);
+document.getElementById("restartLatihanBtn").addEventListener("click", startLatihan);
+document.getElementById("clearCanvasBtn").addEventListener("click", clearLatihanCanvas);
+document.getElementById("finishWritingBtn").addEventListener("click", finishWriting);
+document.getElementById("markBenarBtn").addEventListener("click", markBenar);
+document.getElementById("markSalahBtn").addEventListener("click", markSalah);
+
+attachLatihanDrawingHandlers();
+window.addEventListener("resize", () => {
+  if (document.getElementById("latihanSession").style.display === "block") {
+    setupLatihanCanvas();
+  }
+});
+
+// ======================================================================
+// MENU 3 & 4: PILGAN (multiple choice, auto-graded, requeue on salah)
+// Shared controller factory — used for both PILGAN INDO and PILGAN HANZI.
+// ======================================================================
+
+function findWordsContainingChar(ch) {
+  if (!masterEntries) return [];
+  return masterEntries.filter((e) => Array.from(e.hanzi).includes(ch));
+}
+function formatWordList(words) {
+  if (words.length === 0) return '<span class="hint">(tidak ditemukan di kata manapun)</span>';
+  return words.map((e, i) => `${i + 1}. ${highlightPause(e.hanzi)} - ${highlightPause(e.pinyin)} - ${highlightPause(e.arti)}`).join("\n");
+}
+
+// Unified quiz controller used by Pilgan Indo/Hanzi (word-level, exact-match grading)
+// and Karakter Hanzi/Pinyin (character-level, set-membership grading — a polyphonic
+// character like 觉=jiao/jue is correct on either reading). cfg.correctTexts(entry)
+// returns the array of valid answer strings for an entry; cfg.getPool() returns
+// {pool, allTexts} freshly (Karakter rebuilds from Master Data each time, in case it
+// changed). Also supports "Sebelumnya": browsing back through already-answered
+// questions (read-only, does not affect the score or the shuffle queue) via a
+// history log pushed each time "Lanjut" truly advances past a question.
+function createQuizController(cfg) {
+  const state = {
+    pool: null, allTexts: null, queue: null, current: null,
+    attemptNumber: 0, wrongAttempts: 0, total: 0,
+    answered: false, pendingCorrect: false, currentOptions: null,
+    wrongEntries: null, historyLog: null, // [{entry, wasCorrect}], most recent last
+  };
+
+  function el(id) { return document.getElementById(id); }
+  function correctTextsFor(entry) { return cfg.correctTexts(entry); }
+
+  function refreshAvailability() {
+    const built = cfg.getPool();
+    const hasEnough = built.pool.length >= (cfg.minPoolSize || 4);
+    if (cfg.noDataId) {
+      const hasAnyMaster = !!(masterEntries && masterEntries.length > 0);
+      el(cfg.noDataId).style.display = hasAnyMaster ? "none" : "block";
+    }
+    el(cfg.introId).style.display = hasEnough ? "block" : "none";
+    if (!hasEnough) {
+      el(cfg.sessionId).style.display = "none";
+      el(cfg.completeId).style.display = "none";
+    }
+  }
+
+  function buildOptionTexts(entry, allTexts) {
+    const valid = correctTextsFor(entry);
+    const validSet = new Set(valid);
+    const displayCorrect = valid[secureRandomInt(valid.length)];
+    const candidatePool = fisherYatesShuffle(allTexts.filter((t) => !validSet.has(t)));
+    const distractors = [];
+    const used = new Set([displayCorrect]);
+    for (const t of candidatePool) {
+      if (used.has(t)) continue;
+      used.add(t);
+      distractors.push(t);
+      if (distractors.length === 3) break;
+    }
+    let i = 0;
+    while (distractors.length < 3 && i < candidatePool.length) {
+      const t = candidatePool[i];
+      if (!validSet.has(t) && !distractors.includes(t)) distractors.push(t);
+      i++;
+    }
+    return fisherYatesShuffle([displayCorrect, ...distractors]);
+  }
+
+  function start() {
+    const built = cfg.getPool();
+    if (built.pool.length < (cfg.minPoolSize || 4)) return;
+    state.pool = built.pool;
+    state.allTexts = built.allTexts;
+    state.queue = fisherYatesShuffle(built.pool);
+    state.total = built.pool.length;
+    state.attemptNumber = 0;
+    state.wrongAttempts = 0;
+    state.wrongEntries = new Set();
+    state.historyLog = [];
+
+    el(cfg.introId).style.display = "none";
+    el(cfg.completeId).style.display = "none";
+    el(cfg.sessionId).style.display = "block";
+    showNext();
+  }
+
+  // Displays entry as a fresh, unanswered question. `isNewAttempt` controls
+  // whether the "Soal ke-N" counter advances (true for normal forward
+  // progress) or stays put (false when Sebelumnya restores a question —
+  // it should show the same attempt number it had originally).
+  function showQuestion(entry, isNewAttempt) {
+    state.current = entry;
+    if (isNewAttempt) state.attemptNumber += 1;
+    state.answered = false;
+
+    el(cfg.progressId).textContent =
+      `Soal ke-${state.attemptNumber} • Sisa ${state.queue.length} dari ${state.total}`;
+    el(cfg.soalTextId).innerHTML = highlightPause(cfg.getQuestionText(entry));
+    el(cfg.answerPanelId).style.display = "none";
+
+    state.currentOptions = buildOptionTexts(entry, state.allTexts);
+    renderLiveOptions();
+  }
+
+  function showNext() {
+    if (state.queue.length === 0) {
+      showComplete();
+      return;
+    }
+    showQuestion(state.queue[0], true);
+    updateNavButtons();
+  }
+
+  function renderLiveOptions() {
+    const container = el(cfg.optionsContainerId);
+    container.innerHTML = "";
+    state.currentOptions.forEach((text, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "btn-outline option-btn";
+      btn.innerHTML = highlightPause(text);
+      btn.addEventListener("click", () => selectOption(idx));
+      container.appendChild(btn);
+    });
+  }
+
+  function renderAnsweredOptions(optionTexts, selectedIdx, validTexts) {
+    const container = el(cfg.optionsContainerId);
+    container.innerHTML = "";
+    optionTexts.forEach((text, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "btn-outline option-btn";
+      btn.innerHTML = highlightPause(text);
+      btn.disabled = true;
+      if (validTexts.has(text)) btn.classList.add("option-correct");
+      else if (idx === selectedIdx) btn.classList.add("option-wrong");
+      container.appendChild(btn);
+    });
+  }
+
+  function selectOption(idx) {
+    if (state.answered) return;
+    state.answered = true;
+
+    const selectedText = state.currentOptions[idx];
+    const validTexts = new Set(correctTextsFor(state.current));
+    const isCorrect = validTexts.has(selectedText);
+    state.pendingCorrect = isCorrect;
+    if (!isCorrect) {
+      state.wrongAttempts += 1;
+      state.wrongEntries.add(state.current);
+    }
+
+    renderAnsweredOptions(state.currentOptions, idx, validTexts);
+
+    const answerEl = el(cfg.answerTextId);
+    answerEl.innerHTML = cfg.answerFormat(state.current);
+    if (cfg.attachSpeaker) cfg.attachSpeaker(answerEl, state.current);
+    if (cfg.wordListId && cfg.buildWordListHtml) {
+      el(cfg.wordListId).innerHTML = cfg.buildWordListHtml(state.current);
+    }
+    el(cfg.answerPanelId).style.display = "block";
+    updateNavButtons();
+  }
+
+  // "Sebelumnya": a real undo of the last "Lanjut" — pulls that question back
+  // out (wherever it currently sits in the queue) and re-shows it completely
+  // unanswered, so a wrong pick can be corrected. If it had been marked wrong,
+  // that mark is reversed too (it's being redone, not repeated).
+  function goPrev() {
+    if (!state.historyLog || state.historyLog.length === 0) return;
+    const record = state.historyLog.pop();
+
+    if (record.wasCorrect) {
+      state.queue.unshift(record.entry);
+    } else {
+      const idx = state.queue.indexOf(record.entry);
+      if (idx !== -1) state.queue.splice(idx, 1);
+      state.queue.unshift(record.entry);
+      state.wrongAttempts = Math.max(0, state.wrongAttempts - 1);
+      state.wrongEntries.delete(record.entry);
+    }
+    state.attemptNumber -= 1;
+    showQuestion(record.entry, true); // re-enters as a fresh attempt at the same number
+    updateNavButtons();
+  }
+
+  function goNext() {
+    if (!state.answered) return;
+    state.historyLog.push({ entry: state.current, wasCorrect: state.pendingCorrect });
+    if (state.pendingCorrect) {
+      state.queue.shift();
+    } else {
+      state.queue = fisherYatesShuffle(state.queue);
+    }
+    showNext();
+    updateNavButtons();
+  }
+
+  function updateNavButtons() {
+    el(cfg.prevBtnId).disabled = !state.historyLog || state.historyLog.length === 0;
+  }
+
+  function showComplete() {
+    el(cfg.sessionId).style.display = "none";
+    el(cfg.completeId).style.display = "block";
+    el(cfg.completeStatsId).innerHTML =
+      `Total soal: <b>${state.total}</b><br>` +
+      `Total percobaan: <b>${state.attemptNumber}</b><br>` +
+      `Salah: <b>${state.wrongAttempts}</b> kali`;
+    const items = Array.from(state.wrongEntries).map(cfg.formatWrongItem);
+    renderWrongList(cfg.wrongListId, items);
+  }
+
+  el(cfg.startBtnId).addEventListener("click", start);
+  el(cfg.restartBtnId).addEventListener("click", start);
+  el(cfg.nextBtnId).addEventListener("click", goNext);
+  el(cfg.prevBtnId).addEventListener("click", goPrev);
+
+  return { refreshAvailability };
+}
+
+const pilganIndoController = createQuizController({
+  noDataId: "piNoData", introId: "piIntro", sessionId: "piSession", completeId: "piComplete",
+  startBtnId: "piStartBtn", restartBtnId: "piRestartBtn", nextBtnId: "piNextBtn", prevBtnId: "piPrevBtn",
+  progressId: "piProgress", soalTextId: "piSoalText", optionsContainerId: "piOptions",
+  answerPanelId: "piAnswerPanel", answerTextId: "piAnswerText", completeStatsId: "piCompleteStats",
+  wrongListId: "piWrongList", minPoolSize: 4,
+  getPool: () => ({ pool: masterEntries || [], allTexts: (masterEntries || []).map((e) => e.hanzi) }),
+  getQuestionText: (e) => e.arti,
+  correctTexts: (e) => [e.hanzi],
+  answerFormat: (e) => `${highlightPause(e.hanzi)} - ${highlightPause(e.pinyin)} <span class="speaker-slot"></span>`,
+  attachSpeaker: (el, e) => attachSpeakerButtons(el, e.hanzi),
+  formatWrongItem: (e) => `${e.hanzi} - ${e.pinyin} - ${e.arti}`,
+});
+
+const pilganHanziController = createQuizController({
+  noDataId: "phNoData", introId: "phIntro", sessionId: "phSession", completeId: "phComplete",
+  startBtnId: "phStartBtn", restartBtnId: "phRestartBtn", nextBtnId: "phNextBtn", prevBtnId: "phPrevBtn",
+  progressId: "phProgress", soalTextId: "phSoalText", optionsContainerId: "phOptions",
+  answerPanelId: "phAnswerPanel", answerTextId: "phAnswerText", completeStatsId: "phCompleteStats",
+  wrongListId: "phWrongList", minPoolSize: 4,
+  getPool: () => ({ pool: masterEntries || [], allTexts: (masterEntries || []).map((e) => e.arti) }),
+  getQuestionText: (e) => e.hanzi,
+  correctTexts: (e) => [e.arti],
+  answerFormat: (e) => `${highlightPause(e.pinyin)} <span class="speaker-slot"></span> - ${highlightPause(e.arti)}`,
+  attachSpeaker: (el, e) => attachSpeakerButtons(el, e.hanzi),
+  formatWrongItem: (e) => `${e.hanzi} - ${e.pinyin} - ${e.arti}`,
+});
+
+// ======================================================================
+// MENU 5: TES CARD — flashcard, one at a time, tap to flip, no grading
+// ======================================================================
+
+let tcQueue = null;
+let tcHistoryStack = null;
+let tcCurrentEntry = null;
+let tcAttemptNumber = 0;
+let tcWrongAttempts = 0;
+let tcWrongEntries = null;
+let tcTotal = 0;
+let tcFlipped = false;
+
+function refreshTcAvailability() {
+  const hasData = !!(masterEntries && masterEntries.length >= 1);
+  document.getElementById("tcNoData").style.display = hasData ? "none" : "block";
+  document.getElementById("tcIntro").style.display = hasData ? "block" : "none";
+  if (!hasData) {
+    document.getElementById("tcSession").style.display = "none";
+    document.getElementById("tcComplete").style.display = "none";
+  }
+}
+
+function startTesCard() {
+  if (!masterEntries || masterEntries.length < 1) return;
+  tcQueue = fisherYatesShuffle(masterEntries);
+  tcHistoryStack = [];
+  tcTotal = masterEntries.length;
+  tcAttemptNumber = 0;
+  tcWrongAttempts = 0;
+  tcWrongEntries = new Set();
+
+  document.getElementById("tcIntro").style.display = "none";
+  document.getElementById("tcComplete").style.display = "none";
+  document.getElementById("tcSession").style.display = "block";
+  showTcCard();
+}
+
+function showTcCard() {
+  if (tcQueue.length === 0) {
+    showTcComplete();
+    return;
+  }
+  tcCurrentEntry = tcQueue[0];
+  tcAttemptNumber += 1;
+  tcFlipped = false;
+
+  document.getElementById("tcProgress").textContent =
+    `Kartu ke-${tcAttemptNumber} • Sisa ${tcQueue.length} dari ${tcTotal}`;
+  document.getElementById("tcFrontText").innerHTML = highlightPause(tcCurrentEntry.arti);
+  document.getElementById("tcFront").style.display = "block";
+  document.getElementById("tcBack").style.display = "none";
+  document.getElementById("tcPrevBtn").disabled = tcHistoryStack.length === 0;
+}
+
+function flipTcCard() {
+  if (!tcCurrentEntry) return;
+  tcFlipped = !tcFlipped;
+
+  if (tcFlipped) {
+    document.getElementById("tcBackHanzi").innerHTML = highlightPause(tcCurrentEntry.hanzi);
+    const pinyinArtiEl = document.getElementById("tcBackPinyinArti");
+    pinyinArtiEl.innerHTML = `${highlightPause(tcCurrentEntry.pinyin)} <span class="speaker-slot"></span> - ${highlightPause(tcCurrentEntry.arti)}`;
+    attachSpeakerButtons(pinyinArtiEl, tcCurrentEntry.hanzi);
+    document.getElementById("tcFront").style.display = "none";
+    document.getElementById("tcBack").style.display = "block";
+  } else {
+    document.getElementById("tcFront").style.display = "block";
+    document.getElementById("tcBack").style.display = "none";
+  }
+}
+
+// "Selanjutnya": current card is done — move it out of the queue into history
+// (so "Sebelumnya" can bring it back) and show the next one.
+function nextTcCard() {
+  if (!tcCurrentEntry) return;
+  const passedEntry = tcQueue.shift();
+  tcHistoryStack.push(passedEntry);
+  showTcCard();
+}
+
+// "Sebelumnya": undo the last "Selanjutnya" — put that card back at the front
+// of the queue and show it again (in case Next was tapped by accident).
+function prevTcCard() {
+  if (!tcHistoryStack || tcHistoryStack.length === 0) return;
+  const prevEntry = tcHistoryStack.pop();
+  tcQueue.unshift(prevEntry);
+  showTcCard();
+}
+
+// "Salah": same requeue mechanism as Tulis/Pilgan — reshuffle the ENTIRE
+// remaining queue (current card stays in it), guaranteeing it resurfaces
+// again later at a random position, instead of being marked done.
+function markTcSalah() {
+  if (!tcCurrentEntry) return;
+  tcWrongAttempts += 1;
+  tcWrongEntries.add(tcCurrentEntry);
+  tcQueue = fisherYatesShuffle(tcQueue);
+  showTcCard();
+}
+
+function showTcComplete() {
+  document.getElementById("tcSession").style.display = "none";
+  document.getElementById("tcComplete").style.display = "block";
+  document.getElementById("tcCompleteStats").innerHTML =
+    `Total kartu: <b>${tcTotal}</b><br>` +
+    `Total dilihat: <b>${tcAttemptNumber}</b><br>` +
+    `Salah: <b>${tcWrongAttempts}</b> kali`;
+  const items = Array.from(tcWrongEntries).map((e) => `${e.hanzi} - ${e.pinyin} - ${e.arti}`);
+  renderWrongList("tcWrongList", items);
+}
+
+document.getElementById("tcCard").addEventListener("click", flipTcCard);
+document.getElementById("tcStartBtn").addEventListener("click", startTesCard);
+document.getElementById("tcRestartBtn").addEventListener("click", startTesCard);
+document.getElementById("tcNextBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  nextTcCard();
+});
+document.getElementById("tcPrevBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  prevTcCard();
+});
+document.getElementById("tcSalahBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  markTcSalah();
+});
+
+// ======================================================================
+// MENU 6: KARAKTER — auto-pecah Master Data per karakter (bukan per kata)
+// ======================================================================
+// A line only contributes if its pinyin (split by whitespace) has exactly
+// as many syllables as its hanzi has characters — otherwise it's skipped
+// and counted in `skipped` (shown in the tab, never touching Master Data).
+// A character with more than one valid reading keeps ALL of them; grading
+// is by set-membership, so any valid reading/character counts as correct.
+
+function buildCharacterPools() {
+  const characterMap = new Map(); // char -> Set(readings)
+  const skippedDetails = [];
+  let skipped = 0;
+  const totalLines = masterEntries ? masterEntries.length : 0;
+
+  if (masterEntries) {
+    masterEntries.forEach((entry) => {
+      const chars = Array.from(entry.hanzi);
+      const syllables = entry.pinyin.trim().split(/\s+/).filter((s) => s.length > 0);
+      if (chars.length === 0 || chars.length !== syllables.length) {
+        skipped += 1;
+        skippedDetails.push({
+          hanzi: entry.hanzi, pinyin: entry.pinyin, arti: entry.arti,
+          charCount: chars.length, syllableCount: syllables.length,
+        });
+        return;
+      }
+      chars.forEach((ch, idx) => {
+        if (!characterMap.has(ch)) characterMap.set(ch, new Set());
+        characterMap.get(ch).add(syllables[idx]);
+      });
+    });
+  }
+
+  const pinyinMap = new Map(); // syllable -> Set(chars)
+  characterMap.forEach((readings, ch) => {
+    readings.forEach((r) => {
+      if (!pinyinMap.has(r)) pinyinMap.set(r, new Set());
+      pinyinMap.get(r).add(ch);
+    });
+  });
+
+  return { characterMap, pinyinMap, skipped, totalLines, skippedDetails };
+}
+
+function poolFromCharacterMap(characterMap) {
+  const pool = [];
+  const allTexts = [];
+  characterMap.forEach((readings, ch) => {
+    pool.push({ question: ch, validAnswers: readings });
+    readings.forEach((r) => allTexts.push(r));
+  });
+  return { pool, allTexts };
+}
+
+function poolFromPinyinMap(pinyinMap) {
+  const pool = [];
+  const allTexts = [];
+  pinyinMap.forEach((chars, py) => {
+    pool.push({ question: py, validAnswers: chars });
+    chars.forEach((c) => allTexts.push(c));
+  });
+  return { pool, allTexts };
+}
+
+function buildSkippedDetailHtml(skippedDetails) {
+  if (skippedDetails.length === 0) return '<span class="hint">Tidak ada baris yang dilewati.</span>';
+  return skippedDetails
+    .map((d, i) => `${i + 1}. ${highlightPause(d.hanzi)} - ${highlightPause(d.pinyin)} - ${highlightPause(d.arti)} — <span class="hint">${d.charCount} karakter, ${d.syllableCount} suku kata</span>`)
+    .join("\n");
+}
+
+let charInfoHidden = false; // resets on page load/refresh, not persisted
+
+function updateCharInfoVisibility() {
+  document.getElementById("charSummaryCollapsedBar").style.display = charInfoHidden ? "block" : "none";
+  document.getElementById("charSummaryExpanded").style.display = charInfoHidden ? "none" : "block";
+}
+
+function refreshKarakterAvailability() {
+  const hasAnyMaster = !!(masterEntries && masterEntries.length > 0);
+  document.getElementById("charNoData").style.display = hasAnyMaster ? "none" : "block";
+  document.getElementById("charInfo").style.display = hasAnyMaster ? "block" : "none";
+  document.getElementById("charSubTabs").style.display = hasAnyMaster ? "flex" : "none";
+
+  if (!hasAnyMaster) {
+    document.getElementById("subPanelCharHanzi").classList.remove("active");
+    document.getElementById("subPanelCharPinyin").classList.remove("active");
+    return;
+  }
+
+  const built = buildCharacterPools();
+  let summaryHtml = `Master data: <b>${built.totalLines}</b> kata → <b>${built.characterMap.size}</b> karakter unik, <b>${built.pinyinMap.size}</b> suku kata pinyin unik.`;
+  if (built.skipped > 0) {
+    summaryHtml += `<br><span style="color:var(--red);">${built.skipped} baris dilewati (jumlah suku kata pinyin tidak cocok dengan jumlah karakter).</span>`;
+  }
+  document.getElementById("charSummaryCard").innerHTML = summaryHtml;
+  document.getElementById("charDetailBtn").style.display = built.skipped > 0 ? "inline-block" : "none";
+
+  const notEnough = built.characterMap.size < 4 || built.pinyinMap.size < 4;
+  document.getElementById("charNotEnoughWarning").style.display = notEnough ? "block" : "none";
+
+  updateCharInfoVisibility();
+
+  chHanziController.refreshAvailability();
+  chPinyinController.refreshAvailability();
+}
+
+document.getElementById("charHideBtn").addEventListener("click", () => {
+  charInfoHidden = true;
+  updateCharInfoVisibility();
+});
+document.getElementById("charSummaryCollapsedBar").addEventListener("click", () => {
+  charInfoHidden = false;
+  updateCharInfoVisibility();
+});
+document.getElementById("charDetailBtn").addEventListener("click", () => {
+  const built = buildCharacterPools();
+  openExpand("Baris yang Dilewati", buildSkippedDetailHtml(built.skippedDetails));
+});
+
+const chHanziController = createQuizController({
+  introId: "chHanziIntro", sessionId: "chHanziSession", completeId: "chHanziComplete",
+  startBtnId: "chHanziStartBtn", restartBtnId: "chHanziRestartBtn",
+  nextBtnId: "chHanziNextBtn", prevBtnId: "chHanziPrevBtn",
+  progressId: "chHanziProgress", soalTextId: "chHanziSoalText", optionsContainerId: "chHanziOptions",
+  answerPanelId: "chHanziAnswerPanel", answerTextId: "chHanziAnswerText", completeStatsId: "chHanziCompleteStats",
+  wrongListId: "chHanziWrongList", wordListId: "chHanziWordList", minPoolSize: 4,
+  getPool: () => poolFromCharacterMap(buildCharacterPools().characterMap),
+  getQuestionText: (e) => e.question,
+  correctTexts: (e) => Array.from(e.validAnswers),
+  answerFormat: (entry) => `${Array.from(entry.validAnswers).map(highlightPause).join(" / ")} <span class="speaker-slot"></span>`,
+  attachSpeaker: (el, entry) => attachSpeakerButtons(el, entry.question),
+  formatWrongItem: (entry) => `${entry.question} - ${Array.from(entry.validAnswers).join("/")}`,
+  buildWordListHtml: (entry) => {
+    const words = findWordsContainingChar(entry.question);
+    return `<div class="hint" style="text-align:left; margin:10px 0 4px;">Kata:</div><div class="card result"><div class="result-box">${formatWordList(words)}</div></div>`;
+  },
+});
+
+const chPinyinController = createQuizController({
+  introId: "chPinyinIntro", sessionId: "chPinyinSession", completeId: "chPinyinComplete",
+  startBtnId: "chPinyinStartBtn", restartBtnId: "chPinyinRestartBtn",
+  nextBtnId: "chPinyinNextBtn", prevBtnId: "chPinyinPrevBtn",
+  progressId: "chPinyinProgress", soalTextId: "chPinyinSoalText", optionsContainerId: "chPinyinOptions",
+  answerPanelId: "chPinyinAnswerPanel", answerTextId: "chPinyinAnswerText", completeStatsId: "chPinyinCompleteStats",
+  wrongListId: "chPinyinWrongList", wordListId: "chPinyinWordList", minPoolSize: 4,
+  getPool: () => poolFromPinyinMap(buildCharacterPools().pinyinMap),
+  getQuestionText: (e) => e.question,
+  correctTexts: (e) => Array.from(e.validAnswers),
+  answerFormat: (entry) => Array.from(entry.validAnswers).map(highlightPause).join(" / "),
+  formatWrongItem: (entry) => `${entry.question} - ${Array.from(entry.validAnswers).join("/")}`,
+  buildWordListHtml: (entry) => {
+    const chars = Array.from(entry.validAnswers);
+    const sections = chars.map((ch) => {
+      const words = findWordsContainingChar(ch);
+      return `<b>Karakter ${highlightPause(ch)}:</b>\n${formatWordList(words)}`;
+    });
+    return `<div class="hint" style="text-align:left; margin:10px 0 4px;">Kata:</div><div class="card result"><div class="result-box">${sections.join("\n\n")}</div></div>`;
+  },
+});
+
+function setCharSubMode(sub) {
+  document.getElementById("subTabCharHanzi").classList.toggle("active", sub === "hanzi");
+  document.getElementById("subTabCharPinyin").classList.toggle("active", sub === "pinyin");
+  document.getElementById("subPanelCharHanzi").classList.toggle("active", sub === "hanzi");
+  document.getElementById("subPanelCharPinyin").classList.toggle("active", sub === "pinyin");
+}
+document.getElementById("subTabCharHanzi").addEventListener("click", () => setCharSubMode("hanzi"));
+document.getElementById("subTabCharPinyin").addEventListener("click", () => setCharSubMode("pinyin"));
+
+function refreshAllPracticeAvailability() {
+  refreshLatihanAvailability();
+  pilganIndoController.refreshAvailability();
+  pilganHanziController.refreshAvailability();
+  refreshTcAvailability();
+  refreshKarakterAvailability();
+}
+
+// ---------- Tab switching ----------
+
+function setMode(newMode) {
+  document.getElementById("tabTes").classList.toggle("active", newMode === "tes");
+  document.getElementById("tabTulis").classList.toggle("active", newMode === "tulis");
+  document.getElementById("tabPilganIndo").classList.toggle("active", newMode === "pilganIndo");
+  document.getElementById("tabPilganHanzi").classList.toggle("active", newMode === "pilganHanzi");
+  document.getElementById("tabTesCard").classList.toggle("active", newMode === "tesCard");
+  document.getElementById("tabKarakter").classList.toggle("active", newMode === "karakter");
+  document.getElementById("panelTes").classList.toggle("active", newMode === "tes");
+  document.getElementById("panelTulis").classList.toggle("active", newMode === "tulis");
+  document.getElementById("panelPilganIndo").classList.toggle("active", newMode === "pilganIndo");
+  document.getElementById("panelPilganHanzi").classList.toggle("active", newMode === "pilganHanzi");
+  document.getElementById("panelTesCard").classList.toggle("active", newMode === "tesCard");
+  document.getElementById("panelKarakter").classList.toggle("active", newMode === "karakter");
+  if (newMode !== "tes") refreshAllPracticeAvailability();
+}
+
+document.getElementById("tabTes").addEventListener("click", () => setMode("tes"));
+document.getElementById("tabTulis").addEventListener("click", () => setMode("tulis"));
+document.getElementById("tabPilganIndo").addEventListener("click", () => setMode("pilganIndo"));
+document.getElementById("tabPilganHanzi").addEventListener("click", () => setMode("pilganHanzi"));
+document.getElementById("tabTesCard").addEventListener("click", () => setMode("tesCard"));
+document.getElementById("tabKarakter").addEventListener("click", () => setMode("karakter"));
+
+refreshAllPracticeAvailability();
+</script>
+
+</body>
+</html>
